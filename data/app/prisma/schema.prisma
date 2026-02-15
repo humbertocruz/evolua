@@ -11,6 +11,7 @@ model Movie {
   id Int @id @default(autoincrement())
   title String 
   overview String 
+  genre String 
   poster_path String 
   vote_average Int 
 }

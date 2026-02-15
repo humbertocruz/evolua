@@ -36,7 +36,7 @@ interface GenesisModel {
 }
 
 async function build() {
-    console.log("🌸 Genesis Builder: Iniciando a materialização do projeto...");
+    console.log("🌸 Evolua Builder: Iniciando a materialização do projeto...");
 
     const modelPath = path.join(process.cwd(), "data", "genesis.model.json");
     if (!fs.existsSync(modelPath)) {
@@ -47,12 +47,18 @@ async function build() {
     console.log(`🧬 DNA Carregado: ${model.project.name}`);
 
     const project = new Project();
-    const outDir = path.join(process.cwd(), "data", "app");
-    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    
+    // Raiz do Projeto Gerado
+    const projectRoot = path.join(process.cwd(), "data", "app");
+    if (!fs.existsSync(projectRoot)) fs.mkdirSync(projectRoot, { recursive: true });
+
+    // Pasta do Next.js App Router (agora dentro de 'app/')
+    const appDir = path.join(projectRoot, "app");
+    if (!fs.existsSync(appDir)) fs.mkdirSync(appDir, { recursive: true });
 
     // --- A. Gerar Root Layout (app/layout.tsx) ---
     console.log("🏗️ Construindo Layout Base...");
-    const layoutFile = project.createSourceFile(path.join(outDir, "layout.tsx"), "", { overwrite: true });
+    const layoutFile = project.createSourceFile(path.join(appDir, "layout.tsx"), "", { overwrite: true });
     layoutFile.addImportDeclaration({ moduleSpecifier: "next/font/google", namedImports: ["Inter"] });
     layoutFile.addImportDeclaration({ moduleSpecifier: "./globals.css" });
     layoutFile.addVariableStatement({ declarationKind: VariableDeclarationKind.Const, declarations: [{ name: "inter", initializer: "Inter({ subsets: ['latin'] })" }] });
@@ -67,12 +73,44 @@ async function build() {
         statements: `return (<html lang="en"><body className={\`\${inter.className} ${bgClass} ${textClass} antialiased\`}>{children}</body></html>);`
     });
 
-    // --- B. Gerar Páginas (app/[route]/page.tsx) ---
+    // --- B. Gerar Globals CSS (app/globals.css) ---
+    console.log("🎨 Pintando Globals CSS...");
+    const cssContent = `@tailwind base;\n@tailwind components;\n@tailwind utilities;\n`;
+    fs.writeFileSync(path.join(appDir, "globals.css"), cssContent);
+
+    // --- C. Gerar Tailwind Config (tailwind.config.ts) ---
+    console.log("🎨 Configurando Tailwind...");
+    const tailwindConfig = `
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: "${model.theme.colors.primary.replace('-500', '')}", // Simplificação
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+`;
+    fs.writeFileSync(path.join(projectRoot, "tailwind.config.ts"), tailwindConfig);
+
+
+    // --- D. Gerar Páginas (app/[route]/page.tsx) ---
     if (model.ui?.pages) {
         for (const page of model.ui.pages) {
             console.log(`📄 Gerando Página: ${page.name} (${page.route})`);
             const routePath = page.route.startsWith("/") ? page.route.substring(1) : page.route;
-            const pageDir = path.join(outDir, routePath);
+            
+            // Agora dentro de app/
+            const pageDir = path.join(appDir, routePath);
             if (!fs.existsSync(pageDir)) fs.mkdirSync(pageDir, { recursive: true });
             const pageFile = project.createSourceFile(path.join(pageDir, "page.tsx"), "", { overwrite: true });
             pageFile.addImportDeclaration({ moduleSpecifier: "react", defaultImport: "React" });
@@ -88,7 +126,7 @@ async function build() {
                             </h1>
                             <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
                                 <p className="text-xl mt-4 border border-${model.theme.colors.primary} p-4 rounded-xl">
-                                    Página gerada pelo Genesis: ${page.name} 🌸
+                                    Página gerada pelo Evolua: ${page.name} 🌸
                                 </p>
                             </div>
                         </main>
@@ -98,9 +136,10 @@ async function build() {
         }
     }
 
-    // --- C. Gerar Prisma Schema (Neon DB) ---
+    // --- E. Gerar Prisma Schema (Neon DB) ---
     console.log("🐘 Gerando Schema do Prisma (Neon DB)...");
-    const prismaDir = path.join(outDir, "prisma");
+    // Prisma fica na raiz do projeto (fora de app/)
+    const prismaDir = path.join(projectRoot, "prisma");
     if (!fs.existsSync(prismaDir)) fs.mkdirSync(prismaDir, { recursive: true });
 
     let schemaContent = `generator client {\n  provider = "prisma-client-js"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n`;
@@ -120,13 +159,11 @@ async function build() {
         }
     }
     fs.writeFileSync(path.join(prismaDir, "schema.prisma"), schemaContent);
-    console.log("✅ Schema Prisma gerado em data/app/prisma/schema.prisma! 🐘✨");
 
-    // --- D. Gerar API Routes (app/api/[entity]/route.ts) ---
+    // --- F. Gerar API Routes (app/api/[entity]/route.ts) ---
     if (model.data?.entities) {
-        // Criar lib/prisma.ts (Singleton)
-        console.log("🛣️ Configurando Prisma Client Global...");
-        const libDir = path.join(outDir, "lib");
+        // Criar lib/prisma.ts (Singleton) - Dentro de app/lib ou raiz/lib? Next recomenda raiz/lib ou src/lib. Vamos por em app/lib pra ficar junto
+        const libDir = path.join(appDir, "lib");
         if (!fs.existsSync(libDir)) fs.mkdirSync(libDir, { recursive: true });
         const prismaLibFile = project.createSourceFile(path.join(libDir, "prisma.ts"), "", { overwrite: true });
         prismaLibFile.addStatements(`
@@ -139,19 +176,16 @@ async function build() {
         `);
 
         for (const entity of model.data.entities) {
-            const entityPlural = entity.name.toLowerCase() + "s"; // Pluralização simples
+            const entityPlural = entity.name.toLowerCase() + "s";
             console.log(`🛣️ Gerando API Route: /api/${entityPlural}`);
             
-            const apiDir = path.join(outDir, "api", entityPlural);
+            const apiDir = path.join(appDir, "api", entityPlural);
             if (!fs.existsSync(apiDir)) fs.mkdirSync(apiDir, { recursive: true });
 
             const routeFile = project.createSourceFile(path.join(apiDir, "route.ts"), "", { overwrite: true });
-            
-            // Imports
             routeFile.addImportDeclaration({ moduleSpecifier: "next/server", namedImports: ["NextResponse"] });
-            routeFile.addImportDeclaration({ moduleSpecifier: "../../lib/prisma", namedImports: ["prisma"] }); // Caminho relativo da API para lib
+            routeFile.addImportDeclaration({ moduleSpecifier: "../../lib/prisma", namedImports: ["prisma"] }); // Ajustado path relativo
 
-            // GET Handler
             routeFile.addFunction({
                 name: "GET",
                 isExported: true,
@@ -166,7 +200,6 @@ async function build() {
                 `
             });
 
-            // POST Handler
             routeFile.addFunction({
                 name: "POST",
                 isExported: true,
@@ -185,7 +218,7 @@ async function build() {
         }
     }
     
-    // --- E. Gerar package.json (Para o App funcionar!) ---
+    // --- G. Gerar package.json ---
     console.log("📦 Gerando package.json do App...");
     const pkgJson = {
         name: model.project.name.toLowerCase().replace(/\s+/g, "-"),
@@ -199,7 +232,7 @@ async function build() {
             "postinstall": "prisma generate"
         },
         dependencies: {
-            "next": "14.2.0", // Usando Next 14 estável
+            "next": "14.2.0",
             "react": "^18",
             "react-dom": "^18",
             "@prisma/client": "^5.22.0",
@@ -217,10 +250,9 @@ async function build() {
             "prisma": "^5.22.0"
         }
     };
-    fs.writeFileSync(path.join(outDir, "package.json"), JSON.stringify(pkgJson, null, 2));
+    fs.writeFileSync(path.join(projectRoot, "package.json"), JSON.stringify(pkgJson, null, 2));
 
-
-    // 3. Salvar Projeto TS
+    // Salvar Projeto TS
     console.log("💾 Salvando arquivos TSX...");
     await project.save();
     console.log("✅ Projeto materializado com sucesso! 🌸🚀");

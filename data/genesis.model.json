@@ -21,6 +21,7 @@
           { "name": "id", "type": "number", "primary": true },
           { "name": "title", "type": "string" },
           { "name": "overview", "type": "string" },
+          { "name": "genre", "type": "string" },
           { "name": "poster_path", "type": "string" },
           { "name": "vote_average", "type": "number" }
         ]
