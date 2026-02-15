@@ -1,0 +1,35 @@
+{
+  "name": "evolua",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/index.ts",
+    "ping": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/ai/ping.ts",
+    "modernize": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/modernize.ts",
+    "migrate-next": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/next-migrator.ts",
+    "create": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/creator.ts",
+    "create-service": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/service-creator.ts",
+    "connect": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/connector.ts",
+    "evolve": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/engine.ts",
+    "factory": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/factory.ts",
+    "inject": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' ts-node src/evolua/injector.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^5.22.0",
+    "dotenv": "^17.3.1",
+    "prisma": "^5.22.0",
+    "ts-morph": "^27.0.2"
+  }
+}

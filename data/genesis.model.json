@@ -1,0 +1,50 @@
+{
+  "project": {
+    "name": "Genesis Movie App",
+    "version": "0.1.0",
+    "description": "A futuristic movie dashboard powered by Genesis AI."
+  },
+  "theme": {
+    "colors": {
+      "primary": "pink-500",
+      "background": "zinc-950",
+      "surface": "zinc-900",
+      "text": "zinc-100"
+    },
+    "style": "glassmorphism"
+  },
+  "data": {
+    "entities": [
+      {
+        "name": "Movie",
+        "fields": [
+          { "name": "id", "type": "number", "primary": true },
+          { "name": "title", "type": "string" },
+          { "name": "overview", "type": "string" },
+          { "name": "poster_path", "type": "string" },
+          { "name": "vote_average", "type": "number" }
+        ]
+      }
+    ]
+  },
+  "ui": {
+    "pages": [
+      {
+        "route": "/dashboard",
+        "name": "DashboardPage",
+        "layout": "MainLayout",
+        "components": [
+          { "type": "Header", "props": { "title": "Genesis Movies" } },
+          { "type": "MovieCard", "props": { "data": "$Movie" } }
+        ]
+      }
+    ],
+    "components": [
+      {
+        "name": "MovieCard",
+        "props": ["id", "title", "poster_path", "vote_average"],
+        "style": "card-hover-effect"
+      }
+    ]
+  }
+}
