@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "pink", // Simplificação
+        primary: "#ec4899", // pink-500 hardcoded for safety/demo
       },
     },
   },

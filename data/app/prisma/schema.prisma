@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Movie {
@@ -13,5 +13,7 @@ model Movie {
   overview String 
   genre String 
   poster_path String 
+  backdrop_path String 
+  release_date String 
   vote_average Int 
 }

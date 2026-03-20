@@ -1,8 +1,8 @@
 {
   "project": {
-    "name": "Genesis Movie App",
-    "version": "0.1.0",
-    "description": "A futuristic movie dashboard powered by Genesis AI."
+    "name": "Evolua Movie App",
+    "version": "0.2.0",
+    "description": "A futuristic movie dashboard powered by Evolua AI."
   },
   "theme": {
     "colors": {
@@ -23,6 +23,8 @@
           { "name": "overview", "type": "string" },
           { "name": "genre", "type": "string" },
           { "name": "poster_path", "type": "string" },
+          { "name": "backdrop_path", "type": "string" },
+          { "name": "release_date", "type": "string" },
           { "name": "vote_average", "type": "number" }
         ]
       }
@@ -35,8 +37,18 @@
         "name": "DashboardPage",
         "layout": "MainLayout",
         "components": [
-          { "type": "Header", "props": { "title": "Genesis Movies" } },
-          { "type": "MovieCard", "props": { "data": "$Movie" } }
+          { "type": "Header", "props": { "title": "Evolua Movies" } },
+          { "type": "MovieList", "props": { "data": "$Movie" } }
+        ]
+      },
+      {
+        "route": "/movie/[id]",
+        "name": "MovieDetailsPage",
+        "layout": "MainLayout",
+        "components": [
+          { "type": "Header", "props": { "title": "Movie Details", "backButton": true } },
+          { "type": "MovieHero", "props": { "data": "$Movie" } },
+          { "type": "MovieInfo", "props": { "data": "$Movie" } }
         ]
       }
     ],
@@ -45,6 +57,11 @@
         "name": "MovieCard",
         "props": ["id", "title", "poster_path", "vote_average"],
         "style": "card-hover-effect"
+      },
+      {
+        "name": "MovieHero",
+        "props": ["backdrop_path", "title"],
+        "style": "hero-large"
       }
     ]
   }
