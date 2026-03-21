@@ -44,6 +44,9 @@ Ou seja: `Evolua` não representa apenas um app, mas possivelmente uma **famíli
 
 ## Princípios iniciais
 
+> Norte adicional do projeto: a evolução do software deve acontecer primariamente no **modelo multidimensional**. O código gerado é materialização final, não a superfície principal de edição. No futuro, isso pode inclusive abrir caminho para um **git semântico**, baseado em mudanças estruturais do objeto multidimensional em vez de diffs puramente textuais.
+
+
 ### 1. IA é opcional
 No começo, o projeto deve funcionar **sem IA**.
 A estrutura principal precisa ser determinística, previsível e local.
@@ -78,6 +81,10 @@ No futuro, IA pode:
 Mas sempre como camada opcional sobre uma base sólida.
 
 ## Blocos da arquitetura desejada
+
+### Nota arquitetural atual
+No direcionamento atual do projeto, `structure`, `visual`, `data` e `behavior` tendem a ser tratados como **dimensões canônicas** do app multidimensional. A projeção espacial (`.3djson`) e o código gerado permanecem como camadas derivadas/materializadas.
+
 
 ### Core Model
 Representação estruturada do app e de seus elementos.
