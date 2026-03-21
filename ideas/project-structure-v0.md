@@ -169,24 +169,20 @@ Exemplos:
 5. autosave do modelo canônico
 6. gerar projections/artifacts quando necessário
 
-## 8. Local-first
+## 8. SaaS-first
 
-### Hipótese forte v0
-Evolu[a] deve nascer **local-first**.
+### Hipótese forte atual
+Evolu[a] deve nascer **SaaS-first**.
 
 Razões:
-- mais simples
-- mais determinístico
-- menos dependência de backend cedo demais
-- combina com experimentação estrutural
+- maior controle sobre catálogo de actions
+- maior previsibilidade do ambiente
+- melhor suporte a IA/Cognitive Bridge
+- melhor governança de integrações e conexões com banco
+- menor fragmentação operacional entre usuários
 
-### Servidor depois
-Servidor pode entrar depois para:
-- sync
-- colaboração
-- snapshots remotos
-- semantic repo
-- publish/distribution
+### Local/export depois
+Execução local, export e runtime fora da plataforma podem entrar depois como camadas adicionais, sem serem o eixo principal do produto inicial.
 
 ## 9. Relação com o código gerado
 

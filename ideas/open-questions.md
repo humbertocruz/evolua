@@ -29,17 +29,23 @@ Hipótese forte:
 
 ## 3. Local ou servidor?
 
-Pergunta:
-- o Evolua funciona primeiro localmente, no dispositivo do usuário?
-- ou o modelo canônico mora num backend/servidor desde o começo?
+### Decisão provisória atual
+O Evolu[a] deve seguir como **SaaS-first**.
 
-Possíveis direções:
-- **local-first** no começo
-- backend opcional depois para sync, colaboração e repositório multidimensional
+Isso significa:
+- a experiência principal roda em ambiente web controlado pela plataforma
+- o catálogo de actions, a IA, o runtime do ambiente e integrações ficam centralizados
+- conexões com banco e governança operacional ficam mais previsíveis
+- export/local runtime podem existir depois, mas não são o eixo principal inicial
 
-Hipótese forte:
-- local-first parece mais coerente com a fase inicial
-- servidor pode entrar depois como camada de sync/versionamento/colaboração
+Resumo:
+- **produto principal SaaS/web**
+- **ambiente controlado pela plataforma**
+- **catálogo e IA centralizados**
+- **local/export como possibilidade futura**
+
+Observação atual:
+- já existe parte do app implementada em `evolua-web`, usando Next.js.
 
 ## 4. Código é salvo continuamente ou gerado no fim?
 
