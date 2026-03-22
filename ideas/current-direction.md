@@ -1,137 +1,184 @@
 # Current Direction
 
-> Este arquivo consolida o estado atual das decisões e direções do Evolu[a].
-> Os demais arquivos em `ideas/` podem conter hipóteses, explorações e caminhos anteriores. Este documento deve funcionar como bússola do momento.
+> Este arquivo consolida a direção oficial atual do Evolu[a].
+> Outros arquivos em `ideas/` podem conter conceitos úteis, mas este documento é a bússola principal.
 
-## 1. O que está valendo agora
+## 1. Tese central
 
-### 1.1 Conceito central
-O Evolu[a] trata o app como um **objeto multidimensional**.
+O **Evolu[a] é um produto SaaS** que armazena e opera o modelo do app na nuvem.
 
-### 1.2 Dimensões canônicas
-Atualmente, as dimensões tratadas como canônicas são:
-- `structure`
-- `visual`
-- `data`
-- `behavior`
+O app do usuário **não precisa virar um projeto interno do Evolu[a]**.
+Em vez disso, o usuário conecta seu app Next.js ao Evolu[a] por meio de um **runtime leve**.
 
-### 1.3 Relação entre structure e visual
-- `structure` é a camada canônica de organização do app
-- `visual` materializa/projeta a `structure`
-- isso abre caminho para múltiplos visuais sobre a mesma base estrutural
+Resumo da tese:
+- o **Evolu[a] Cloud** guarda o projeto, as telas, componentes, visual, schemas e outras entidades semânticas
+- o **app Next.js do usuário** continua livre, limpo e dono da sua própria stack
+- o **runtime local** resolve rotas e renderiza localmente o que vem do modelo do Evolu[a]
 
-### 1.4 Dimensões derivadas
-Atualmente, são tratadas como derivadas:
-- `spatial` (`.3djson`)
-- `code`
-- previews/artifacts
+Frase-guia:
 
-### 1.5 Formato do projeto
-Direção atual:
-- `app.evolua.json` como manifesto central
-- arquivos separados por dimensão
-- `.3djson` como projeção espacial derivada
+> O Next renderiza. O Evolu[a] pensa o app.
 
-### 1.6 Operação por IA
-Cenário oficial importante:
-- a IA deve poder operar o **app aberto** diretamente no modelo multidimensional vivo
-- sem depender de edição textual de código
-- via engine/API local ou ponte equivalente
+---
 
-### 1.7 Cognitive Bridge
-É uma direção oficial do projeto:
-- IA externa precisa de uma camada que ensine o que é o Evolu[a]
-- essa ponte pode combinar skill/documentação + API introspectiva
+## 2. Papel de cada parte
 
-### 1.8 Semantic Model Editor
-Sem IA, o usuário não deve ficar impotente.
+### 2.1 Evolu[a] Cloud
 
-Direção atual:
-- fallback/manual via **Semantic Model Editor**
-- edição estrutural assistida do modelo
+O SaaS do Evolu[a] é a fonte de verdade de alto nível.
+
+Ele deve concentrar:
+- autenticação e contas
+- projetos do usuário
+- páginas e componentes semânticos
+- visual, schemas, data e outras camadas do modelo
+- marketplace
+- catálogo oficial de blocos, telas, templates e packs
+- edição/authoring do app
+- versionamento, publicação e coordenação futura
+
+### 2.2 Runtime local no app Next.js
+
+O projeto do usuário recebe apenas uma camada mínima de integração.
+
+Esse runtime deve:
+- rodar dentro do Next.js do usuário
+- resolver a rota atual
+- consultar o Evolu[a] Cloud
+- obter a definição da página/componente correspondente
+- renderizar isso localmente no app
+
+Idealmente, a integração local deve ser simples, algo próximo de:
+- instalar um pacote (`@evolua/next`, nome provisório)
+- configurar `projectId`, endpoint e token
+- adicionar uma rota dinâmica como `src/app/[[...slug]]/page.tsx`
+
+### 2.3 Projeto do usuário
+
+O projeto do usuário **permanece livre**.
+
+O Evolu[a] não deve obrigar:
+- Prisma
+- banco específico
+- UI library específica
+- estrutura rígida de pastas
+- abandono de páginas manuais
+
+O usuário pode continuar tendo:
+- páginas próprias em `/app`
+- `app/api`
+- banco próprio
+- componentes próprios
+- qualquer stack que faça sentido para ele
+
+---
+
+## 3. O que o Evolu[a] NÃO deve ser agora
+
+Neste momento, o Evolu[a] **não deve ser**:
+- um fork do Next.js
+- um framework que toma posse do projeto do usuário
+- um formato local obrigatório tipo `.evolua/` como eixo principal
+- um builder pesado que gera um projeto inteiro a cada mudança
+- uma plataforma que força o usuário a adotar um banco, ORM ou biblioteca visual específica
+
+A proposta atual é de **integração leve com alto poder semântico**, não de substituição total do ecossistema do usuário.
+
+---
+
+## 4. Marketplace
+
+O marketplace é uma peça natural do produto.
+
+Ele não deve se limitar a UI estética.
+Pode incluir:
+- componentes
+- telas prontas
+- blocos
+- fluxos
+- templates de app
+- packs semânticos
+- schemas e estruturas reutilizáveis
+- no futuro, talvez actions e integrações mais avançadas
+
+A instalação ideal deve acontecer no nível do projeto do Evolu[a] Cloud, e o runtime local do usuário apenas passa a consumir/renderizar o que foi instalado.
+
+---
+
+## 5. Instalação / onboarding
+
+A direção mais promissora hoje é:
+- o usuário conhece e cria projeto no **Evolu[a] Cloud**
+- depois conecta seu app local com uma integração pequena
+
+Ou seja:
+- **usar o Evolu[a}** começa na nuvem
+- **conectar o Evolu[a] ao app local** acontece por pacote/runtime
+
+O onboarding ideal deve evitar pedir uma instalação pesada logo no primeiro contato.
+
+---
+
+## 6. Local connector / bridge
+
+Pode existir no futuro um **connector local opcional**.
+
+Esse connector serviria para casos em que o SaaS sozinho não alcança:
+- bancos locais
+- Docker local
+- APIs privadas
+- arquivos internos do projeto
+- introspecção de ambiente do usuário
+
+Mas isso deve ser tratado como **camada complementar**, não como requisito da arquitetura base do produto.
+
+---
+
+## 7. Sobre edição semântica e IA
+
+A IA continua central para a visão do Evolu[a], mas operando sobre o modelo que vive no SaaS.
+
+Direções que continuam válidas:
+- o usuário deve poder editar o app por intenção, não só por código textual
+- o sistema deve oferecer uma camada semântica real sobre páginas, componentes, visual e dados
+- uma IA externa pode precisar de uma ponte/documentação/protocolo para entender como operar o Evolu[a]
+
+O fallback manual também continua importante:
+- editor semântico
 - actions semânticas
-- autocomplete / validação / recipes
+- formas visuais/estruturadas de operar o modelo sem depender exclusivamente de IA
 
-### 1.9 Catálogo de actions
-- actions são centrais para o produto
-- mas não devem engessar o sistema
-- devem funcionar como camada extensível sobre o modelo canônico
-- com escape hatch pelo Semantic Model Editor
+---
 
-### 1.10 Evolução por fases
-O Evolu[a] deve ajudar apps a evoluir por estágios de maturidade, não apenas “gerar tudo de uma vez”.
+## 8. Papel do `packages/evolua-next`
 
-### 1.11 Self-Evolution
-Permanece como direção estratégica/horizonte:
-- o Evolu[a] deve caminhar para construir progressivamente partes de si mesmo
-- mas isso **não é foco imediato**
+O `packages/evolua-next` continua importante como referência prática da nova direção.
 
-## 2. Mudança importante mais recente
+Ele já aponta para ideias úteis como:
+- host no Next.js
+- rota dinâmica
+- runtime de renderização
+- cockpit `/evolua`
+- experiência visual inicial
 
-A direção mais recente e mais forte não é mais:
-- local-first puro
-- nem SaaS-first puro
+Porém, ele deve evoluir para refletir a arquitetura nova:
+- menos foco em modelo local como fonte primária
+- mais foco em runtime local conectado ao Evolu[a] Cloud
 
-### Estado atual mais coerente
-Um **ecossistema híbrido**:
+---
 
-#### SaaS / plataforma
-Serve como fonte de:
-- catálogo oficial de actions
-- Cognitive Bridge oficial
-- inteligência oficial do sistema
-- templates/recipes
-- eventual sync/repositório/coordenação
+## 9. Próximo passo mais coerente
 
-#### Ambiente local de desenvolvimento
-Serve como lugar onde:
-- o app do usuário roda
-- o preview acontece
-- o editor pode rodar
-- a engine local pode operar o projeto
+Os próximos passos mais coerentes agora são:
 
-### Exemplo de experiência local
-- `localhost:3000` → app/preview
-- `localhost:4000` → editor Evolu[a]
+1. definir o **contrato técnico mínimo** entre Cloud e runtime Next
+2. definir como o runtime autentica e busca páginas/componentes
+3. definir quais entidades vivem no SaaS no v1
+4. desenhar como o usuário conecta um projeto Next existente ao Evolu[a]
+5. adaptar `evolua-next` para consumir dados remotos, não apenas modelo local
 
-### VS Code
-- pode ser ferramenta complementar
-- idealmente com extensão oficial do Evolu[a]
-- não deve ser a única interface principal do produto
-
-## 3. O que está em aberto
-
-- qual é a spec exata da API local mínima
-- como engine/editor/preview conversam na prática
-- como o catálogo oficial sincroniza com o ambiente local
-- se haverá `create-evolua` e `evolua dev` já no começo
-- como será a extensão VS Code
-- até onde vai o connector local opcional
-
-## 4. Hipóteses anteriores que hoje são menos centrais
-
-### 4.1 Local-first puro + Tauri como eixo principal
-Foi uma hipótese válida, mas hoje está menos central do que a visão híbrida.
-
-### 4.2 SaaS-first puro como ambiente único
-Também foi importante como exploração, mas hoje a visão híbrida parece mais equilibrada.
-
-### 4.3 Dependência total de IA
-Hoje a direção melhor é:
-- IA muito importante
-- mas com fallback/manual via Semantic Model Editor + actions
-
-## 5. Próximo passo mais coerente
-
-O próximo passo mais útil agora é descrever a **arquitetura do ecossistema híbrido**, incluindo:
-- papel do SaaS
-- papel do ambiente local
-- `create-evolua`
-- `evolua dev`
-- editor vs preview
-- extensão VS Code
-- como a IA conversa com esse ambiente
+---
 
 ## Resumo curto
 
-> O estado atual do Evolu[a] é um ecossistema híbrido: modelo multidimensional canônico com `structure`, `visual`, `data` e `behavior`; IA operando o app vivo; fallback por Semantic Model Editor + actions; e uma arquitetura combinando plataforma central (catálogo/inteligência) com ambiente local de desenvolvimento e preview.
+> A direção oficial atual do Evolu[a] é: produto SaaS como fonte de verdade do modelo, marketplace e authoring; app Next.js do usuário permanecendo livre; e um runtime local leve resolvendo rotas e renderizando localmente o que vem do Evolu[a] Cloud.

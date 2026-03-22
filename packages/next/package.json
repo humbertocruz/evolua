@@ -1,0 +1,10 @@
+{
+  "name": "@evolua/next",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo '@evolua/next build placeholder'",
+    "lint": "echo '@evolua/next lint placeholder'"
+  }
+}

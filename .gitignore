@@ -3,6 +3,9 @@ node_modules
 dist
 .env
 
+# Monorepo / Turbo
+.turbo
+
 # Next.js
 .next
 out

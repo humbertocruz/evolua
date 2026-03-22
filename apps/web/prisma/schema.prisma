@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["evolua", "app"]
+}
+
+model EvoluaProject {
+  id          String                 @id @default(cuid())
+  slug        String                 @unique
+  name        String
+  description String?
+  model       Json
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  versions    EvoluaProjectVersion[]
+  dataSources EvoluaDataSource[]
+
+  @@map("projects")
+  @@schema("evolua")
+}
+
+model EvoluaProjectVersion {
+  id         String        @id @default(cuid())
+  projectId  String
+  version    Int
+  model      Json
+  note       String?
+  createdAt  DateTime      @default(now())
+  project    EvoluaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, version])
+  @@map("project_versions")
+  @@schema("evolua")
+}
+
+model EvoluaDataSource {
+  id          String        @id @default(cuid())
+  projectId   String
+  key         String
+  name        String
+  kind        String
+  config      Json
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  project     EvoluaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, key])
+  @@map("data_sources")
+  @@schema("evolua")
+}
+
+model AppUser {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+  @@schema("app")
+}

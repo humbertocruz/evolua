@@ -1,32 +1,52 @@
 # Evolua Ideas
 
-Esta pasta reúne ideias estratégicas, conceitos de produto e perguntas abertas do ecossistema Evolua.
+Esta pasta reúne ideias estratégicas, direções de produto e explorações conceituais do ecossistema Evolu[a].
 
 ## Objetivo
 
-Separar do core técnico aquilo que ainda está em exploração conceitual, como:
-- novos produtos do ecossistema
-- decisões arquiteturais grandes
-- formatos de arquivo
-- versionamento semântico
-- storage local vs remoto
-- modos de operação do Evolua
-- decisões de runtime/distribuição (ex.: Tauri + web UI)
+Separar do core técnico aquilo que ainda está em definição, especialmente temas como:
+- arquitetura do produto SaaS
+- integração do runtime local com Next.js
+- marketplace
+- edição semântica
+- IA operando o modelo do app
+- connectors/bridges opcionais
+- visão de longo prazo do ecossistema
 
-## Conteúdo inicial
+## Ponto de verdade atual
 
-- `current-direction.md` → bússola do momento: o que está valendo agora, o que está em aberto e o que foi hipótese anterior
+O documento principal desta pasta é:
 
+- `current-direction.md`
 
-- `multidimensional-app-repo.md` → conceito de um produto/repositório para apps multidimensionais criados pelo Evolua
-- `open-questions.md` → perguntas abertas sobre persistência, runtime, backend, arquivos e operação local/remota
-- `project-structure-v0.md` → rascunho de como um projeto Evolu[a] pode existir na memória e no disco
-- `file-shapes-v0.md` → shapes iniciais dos arquivos centrais e dos arquivos por dimensão
-- `ai-interaction-with-live-app.md` → cenário de IA operando o app aberto diretamente no modelo, sem editar código
-- `agent-protocol-v0.md` → rascunho do protocolo/skill para ensinar IAs a entender e operar o Evolu[a] (Cognitive Bridge)
-- `self-evolution.md` → ideia de bootstrapping: o Evolu[a] evoluir até construir progressivamente a si mesmo
-- `mvp-0.md` → primeiro recorte implementável para provar IA operando o app vivo pelo modelo canônico
-- `app-evolution-phases.md` → rascunho da ideia de apps evoluindo por fases/maturidade dentro do Evolu[a]
-- `semantic-model-editor.md` → ideia de fallback/manual assistido por edição estrutural do modelo + actions semânticas
-- `action-catalog-v0.md` → rascunho do catálogo de actions semânticas e como evitar engessamento
-- `local-connector.md` → necessidade de conector local opcional para recursos privados em um produto SaaS-first
+Ele funciona como a bússola oficial do momento.
+Os outros arquivos podem conter:
+- ideias complementares
+- explorações futuras
+- recortes parciais
+- hipóteses ainda não consolidadas
+
+## Direção atual resumida
+
+Hoje, a visão mais forte do Evolu[a] é:
+- **Evolu[a] como SaaS**
+- **modelo do app vivendo na nuvem**
+- **Next.js do usuário permanecendo livre**
+- **runtime local leve** para resolver rotas e renderizar o que vem do Evolu[a] Cloud
+- **marketplace** como camada natural do produto
+- **bridge local** apenas como recurso opcional/futuro
+
+## Conteúdo atual
+
+- `current-direction.md` → direção oficial atual do produto
+- `local-connector.md` → hipótese de connector/bridge local opcional para acessar recursos privados
+- `agent-protocol-v0.md` → rascunho de como ensinar IAs externas a entender e operar o Evolu[a]
+- `ai-interaction-with-live-app.md` → visão de IA interagindo com o app/modelo vivo
+- `semantic-model-editor.md` → direção de edição manual/estruturada sem depender só de IA
+- `action-catalog-v0.md` → ideias sobre catálogo de actions semânticas
+- `app-evolution-phases.md` → visão de apps evoluindo por estágios dentro do Evolu[a]
+- `self-evolution.md` → horizonte estratégico mais distante
+
+## Regra prática
+
+Se um arquivo desta pasta conflitar com `current-direction.md`, considere `current-direction.md` como fonte oficial.

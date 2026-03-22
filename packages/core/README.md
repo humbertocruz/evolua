@@ -1,27 +1,16 @@
 # @evolua/core
 
-Core do Evolua.
+Pacote central do Evolu[a].
 
-Contém:
-- modelo canônico
-- projeções
-- builder mínimo
-- spatial / `3djson`
-- operações formais sobre o modelo
+Hoje ele guarda partes reaproveitáveis e experimentais do núcleo conceitual do projeto.
+Conforme a arquitetura nova for amadurecendo, esta pasta pode originar pacotes mais claros como:
 
-## Operações iniciais
+- `@evolua/types`
+- `@evolua/core`
+- `@evolua/next`
+- talvez `@evolua/react`
 
-Atualmente o core expõe operações básicas como:
-- `getNode(model, nodeId)`
-- `renameNode(model, nodeId, nextName)`
-- `updateNodeProps(model, nodeId, nextProps)`
+## Observação
 
-Essas operações são o começo da gramática de edição do Evolua.
-No futuro, elas podem crescer para incluir:
-- addNode
-- moveNode
-- removeNode
-- bindData
-- attachBehavior
-- createRoute
-- reproject / rebuild
+Nem todo conteúdo atual desta pasta representa a arquitetura final.
+Ela ainda mistura peças de experimentação com peças potencialmente reaproveitáveis.

@@ -1,0 +1,10 @@
+{
+  "name": "@evolua/types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo '@evolua/types build placeholder'",
+    "lint": "echo '@evolua/types lint placeholder'"
+  }
+}
