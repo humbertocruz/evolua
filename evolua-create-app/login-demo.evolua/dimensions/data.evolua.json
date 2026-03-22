@@ -1,0 +1,33 @@
+{
+  "format": "evolua-dimension",
+  "version": "0.0.1",
+  "appId": "app:login-demo",
+  "dimension": "data",
+  "nodes": {
+    "data:state:auth:email": {
+      "id": "data:state:auth:email",
+      "kind": "state",
+      "name": "AuthEmailState",
+      "source": {
+        "kind": "local-state"
+      }
+    },
+    "data:state:auth:password": {
+      "id": "data:state:auth:password",
+      "kind": "state",
+      "name": "AuthPasswordState",
+      "source": {
+        "kind": "local-state"
+      }
+    },
+    "data:binding:forgot-password-link": {
+      "id": "data:binding:forgot-password-link",
+      "kind": "binding",
+      "name": "ForgotPasswordBinding",
+      "bindingRefs": []
+    }
+  },
+  "meta": {
+    "canonical": true
+  }
+}

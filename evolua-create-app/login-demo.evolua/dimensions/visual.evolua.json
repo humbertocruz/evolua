@@ -1,0 +1,131 @@
+{
+  "format": "evolua-dimension",
+  "version": "0.0.1",
+  "appId": "app:login-demo",
+  "dimension": "visual",
+  "nodes": {
+    "structure:page:login": {
+      "structureNodeId": "structure:page:login",
+      "componentType": "Page",
+      "layout": {
+        "variant": "centered-auth"
+      },
+      "meta": {
+        "title": "Entrar",
+        "description": "Acesse sua conta no app Evolu[a]."
+      }
+    },
+    "structure:section:login-form": {
+      "structureNodeId": "structure:section:login-form",
+      "componentType": "AuthCard",
+      "styleTokens": [
+        "max-w-md",
+        "gap-4"
+      ]
+    },
+    "structure:text:login-title": {
+      "structureNodeId": "structure:text:login-title",
+      "componentType": "Text",
+      "props": {
+        "content": "Entrar"
+      },
+      "styleTokens": [
+        "text-3xl",
+        "font-bold"
+      ]
+    },
+    "structure:component:email-input": {
+      "structureNodeId": "structure:component:email-input",
+      "componentType": "TextField",
+      "props": {
+        "label": "E-mail"
+      }
+    },
+    "structure:component:password-input": {
+      "structureNodeId": "structure:component:password-input",
+      "componentType": "PasswordField",
+      "props": {
+        "label": "Senha"
+      }
+    },
+    "structure:component:submit-button": {
+      "structureNodeId": "structure:component:submit-button",
+      "componentType": "Button",
+      "props": {
+        "label": "Entrar"
+      },
+      "styleTokens": [
+        "primary"
+      ]
+    },
+    "structure:text:forgot-password-link": {
+      "structureNodeId": "structure:text:forgot-password-link",
+      "componentType": "Link",
+      "props": {
+        "content": "Esqueci senha"
+      },
+      "styleTokens": [
+        "text-blue-500",
+        "underline"
+      ]
+    },
+    "structure:page:forgot-password": {
+      "structureNodeId": "structure:page:forgot-password",
+      "componentType": "Page",
+      "layout": {
+        "variant": "centered-auth"
+      }
+    },
+    "structure:section:forgot-password-form": {
+      "structureNodeId": "structure:section:forgot-password-form",
+      "componentType": "AuthCard",
+      "styleTokens": [
+        "max-w-md",
+        "gap-4"
+      ]
+    },
+    "structure:text:forgot-password-title": {
+      "structureNodeId": "structure:text:forgot-password-title",
+      "componentType": "Text",
+      "props": {
+        "content": "Recuperar senha"
+      },
+      "styleTokens": [
+        "text-3xl",
+        "font-bold"
+      ]
+    },
+    "structure:text:forgot-password-description": {
+      "structureNodeId": "structure:text:forgot-password-description",
+      "componentType": "Text",
+      "props": {
+        "content": "Insira seu e-mail para receber as instruções."
+      },
+      "styleTokens": [
+        "text-sm",
+        "text-zinc-600"
+      ]
+    },
+    "structure:component:forgot-password-email-input": {
+      "structureNodeId": "structure:component:forgot-password-email-input",
+      "componentType": "TextField",
+      "props": {
+        "label": "E-mail"
+      }
+    },
+    "structure:component:forgot-password-submit-button": {
+      "structureNodeId": "structure:component:forgot-password-submit-button",
+      "componentType": "Button",
+      "props": {
+        "label": "Enviar instruções"
+      },
+      "styleTokens": [
+        "primary"
+      ]
+    }
+  },
+  "meta": {
+    "projects": "structure",
+    "canonical": true
+  }
+}

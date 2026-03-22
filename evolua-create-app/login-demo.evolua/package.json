@@ -1,0 +1,16 @@
+{
+  "name": "login-demo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "evolua dev",
+    "build": "evolua build"
+  },
+  "dependencies": {
+    "evolua": "workspace:*"
+  },
+  "evolua": {
+    "target": "nextjs",
+    "packageManager": "npm"
+  }
+}

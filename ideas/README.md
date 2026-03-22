@@ -16,6 +16,8 @@ Separar do core técnico aquilo que ainda está em exploração conceitual, como
 ## Conteúdo inicial
 
 - `current-direction.md` → bússola do momento: o que está valendo agora, o que está em aberto e o que foi hipótese anterior
+- `create-evolua-flow.md` → definição do papel do create-evolua e da responsabilidade do pacote evolua
+- `nextjs-target-notes.md` → nuances do target Next.js, incluindo páginas, `app/api` e SSR
 
 
 - `multidimensional-app-repo.md` → conceito de um produto/repositório para apps multidimensionais criados pelo Evolua

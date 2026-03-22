@@ -121,13 +121,27 @@ Hoje a direção melhor é:
 - IA muito importante
 - mas com fallback/manual via Semantic Model Editor + actions
 
-## 5. Próximo passo mais coerente
+## 5. Decisão prática recente: target inicial Next.js
 
-O próximo passo mais útil agora é descrever a **arquitetura do ecossistema híbrido**, incluindo:
-- papel do SaaS
-- papel do ambiente local
+A direção prática mais recente ficou assim:
+- o projeto canônico continua em arquivos `.evolua.json`
+- o target inicial do ecossistema será **Next.js**
+- o Evolu[a] não precisa criar um motor HTML próprio no começo
+- ele pode materializar o modelo canônico em código Next.js
+- e deixar o `next dev` fazer o trabalho de runtime/renderização web
+
+Isso significa:
+- `.evolua` = fonte canônica
+- `evolua` = materializador/orquestrador
+- `next dev` = runtime web inicial do app
+
+## 6. Próximo passo mais coerente
+
+O próximo passo mais útil agora é descrever e implementar o fluxo inicial de:
 - `create-evolua`
-- `evolua dev`
+- `evolua`
+- target `nextjs`
+- materialização do app canônico em projeto Next.js
 - editor vs preview
 - extensão VS Code
 - como a IA conversa com esse ambiente

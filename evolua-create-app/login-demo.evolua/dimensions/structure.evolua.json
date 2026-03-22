@@ -1,0 +1,107 @@
+{
+  "format": "evolua-dimension",
+  "version": "0.0.1",
+  "appId": "app:login-demo",
+  "dimension": "structure",
+  "roots": [
+    "structure:page:login"
+  ],
+  "nodes": {
+    "structure:page:login": {
+      "id": "structure:page:login",
+      "kind": "page",
+      "name": "LoginPage",
+      "children": [
+        "structure:section:login-form"
+      ]
+    },
+    "structure:section:login-form": {
+      "id": "structure:section:login-form",
+      "kind": "section",
+      "name": "LoginFormSection",
+      "children": [
+        "structure:text:login-title",
+        "structure:component:email-input",
+        "structure:component:password-input",
+        "structure:component:submit-button",
+        "structure:text:forgot-password-link"
+      ]
+    },
+    "structure:text:login-title": {
+      "id": "structure:text:login-title",
+      "kind": "text",
+      "name": "LoginTitle",
+      "children": []
+    },
+    "structure:component:email-input": {
+      "id": "structure:component:email-input",
+      "kind": "component",
+      "name": "EmailInput",
+      "children": []
+    },
+    "structure:component:password-input": {
+      "id": "structure:component:password-input",
+      "kind": "component",
+      "name": "PasswordInput",
+      "children": []
+    },
+    "structure:component:submit-button": {
+      "id": "structure:component:submit-button",
+      "kind": "component",
+      "name": "SubmitButton",
+      "children": []
+    },
+    "structure:text:forgot-password-link": {
+      "id": "structure:text:forgot-password-link",
+      "kind": "text",
+      "name": "ForgotPasswordLink",
+      "children": []
+    },
+    "structure:page:forgot-password": {
+      "id": "structure:page:forgot-password",
+      "kind": "page",
+      "name": "ForgotPasswordPage",
+      "children": [
+        "structure:section:forgot-password-form"
+      ]
+    },
+    "structure:section:forgot-password-form": {
+      "id": "structure:section:forgot-password-form",
+      "kind": "section",
+      "name": "ForgotPasswordFormSection",
+      "children": [
+        "structure:text:forgot-password-title",
+        "structure:text:forgot-password-description",
+        "structure:component:forgot-password-email-input",
+        "structure:component:forgot-password-submit-button"
+      ]
+    },
+    "structure:text:forgot-password-title": {
+      "id": "structure:text:forgot-password-title",
+      "kind": "text",
+      "name": "ForgotPasswordTitle",
+      "children": []
+    },
+    "structure:text:forgot-password-description": {
+      "id": "structure:text:forgot-password-description",
+      "kind": "text",
+      "name": "ForgotPasswordDescription",
+      "children": []
+    },
+    "structure:component:forgot-password-email-input": {
+      "id": "structure:component:forgot-password-email-input",
+      "kind": "component",
+      "name": "ForgotPasswordEmailInput",
+      "children": []
+    },
+    "structure:component:forgot-password-submit-button": {
+      "id": "structure:component:forgot-password-submit-button",
+      "kind": "component",
+      "name": "ForgotPasswordSubmitButton",
+      "children": []
+    }
+  },
+  "meta": {
+    "canonical": true
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "format": "evolua-dimension",
+  "version": "0.0.1",
+  "appId": "app:login-demo",
+  "dimension": "behavior",
+  "nodes": {
+    "behavior:event:submit-login": {
+      "id": "behavior:event:submit-login",
+      "kind": "event",
+      "name": "SubmitLoginEvent",
+      "trigger": {
+        "kind": "event",
+        "name": "onPress",
+        "sourceRef": {
+          "id": "structure:component:submit-button",
+          "kind": "component"
+        }
+      }
+    },
+    "behavior:event:forgot-password": {
+      "id": "behavior:event:forgot-password",
+      "kind": "event",
+      "name": "ForgotPasswordEvent",
+      "trigger": {
+        "kind": "event",
+        "name": "onClick",
+        "sourceRef": {
+          "id": "structure:text:forgot-password-link",
+          "kind": "text"
+        }
+      }
+    },
+    "route:forgot-password": {
+      "id": "route:forgot-password",
+      "kind": "route",
+      "name": "ForgotPasswordRoute",
+      "path": "/forgot-password",
+      "pageRef": {
+        "id": "structure:page:forgot-password",
+        "kind": "page"
+      },
+      "transitions": [
+        {
+          "eventName": "onClick",
+          "to": "/forgot-password"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "canonical": true
+  }
+}
