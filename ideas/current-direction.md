@@ -3,149 +3,217 @@
 > Este arquivo consolida o estado atual das decisões e direções do Evolu[a].
 > Os demais arquivos em `ideas/` podem conter hipóteses, explorações e caminhos anteriores. Este documento deve funcionar como bússola do momento.
 
+---
+
+## Update forte — 2026-03-22
+
+A direção do projeto foi simplificada de forma importante.
+
+### O que mudou
+A hipótese anterior mais forte era:
+- manter um projeto canônico separado (`.evolua` / `app.evolua.json`)
+- usar um CLI próprio (`create-evolua`, `evolua dev`)
+- materializar esse modelo em um target Next.js gerado
+- rodar o app resultante via `next dev`
+
+Essa direção ajudou a explorar a visão do produto, mas começou a introduzir complexidade cedo demais:
+- CLI próprio para desenvolvimento
+- geração/materialização como etapa central obrigatória
+- runtime intermediário escondido
+- mais moving parts do que o MVP realmente precisa
+
+### Nova leitura do problema
+O princípio central do Evolu[a] continua **inalterado**:
+
+> **o app deve nascer e evoluir a partir do modelo, não do código-fonte**
+
+Mas isso **não obriga** o projeto a manter uma arquitetura pesada de materialização externa desde o começo.
+
+### Nova direção principal
+A direção atual mais promissora é:
+
+- **Next.js vira o host/runtime inicial do Evolu[a]**
+- **o modelo continua sendo a fonte da verdade**
+- **o código do host não é a superfície principal de autoria**
+- **rotas dinâmicas do Next são usadas como palco para renderizar o modelo**
+
+Formulação curta:
+
+> **O Next renderiza. O Evolu[a] pensa o app.**
+
+Ou ainda:
+
+> **Evolu[a] é uma camada de autoria e evolução semântica sobre Next.js.**
+
+---
+
 ## 1. O que está valendo agora
 
 ### 1.1 Conceito central
-O Evolu[a] trata o app como um **objeto multidimensional**.
+O Evolu[a] trata o app como um **objeto vivo definido por modelo**.
 
-### 1.2 Dimensões canônicas
-Atualmente, as dimensões tratadas como canônicas são:
-- `structure`
-- `visual`
-- `data`
-- `behavior`
+A visão multidimensional continua importante, mas o foco imediato deixa de ser “separar tudo fisicamente em múltiplos arquivos canônicos desde o dia 1” e passa a ser:
+- preservar o **modelo como verdade**
+- reduzir a complexidade do runtime
+- provar o loop **modelo → app rodando** de forma direta
 
-### 1.3 Relação entre structure e visual
-- `structure` é a camada canônica de organização do app
-- `visual` materializa/projeta a `structure`
-- isso abre caminho para múltiplos visuais sobre a mesma base estrutural
+### 1.2 Relação com Next.js
+Next.js agora é entendido menos como “target distante a ser gerado” e mais como:
+- **host inicial do ecossistema**
+- runtime de desenvolvimento web
+- motor de roteamento/renderização
+- base prática para o MVP
 
-### 1.4 Dimensões derivadas
-Atualmente, são tratadas como derivadas:
-- `spatial` (`.3djson`)
-- `code`
-- previews/artifacts
+Isso significa que o Evolu[a] não tenta competir com o Next em:
+- bundling
+- dev server
+- App Router
+- runtime server/client
+- deploy
 
-### 1.5 Formato do projeto
-Direção atual:
-- `app.evolua.json` como manifesto central
-- arquivos separados por dimensão
-- `.3djson` como projeção espacial derivada
+Ele opera **acima** disso.
 
-### 1.6 Operação por IA
-Cenário oficial importante:
-- a IA deve poder operar o **app aberto** diretamente no modelo multidimensional vivo
-- sem depender de edição textual de código
-- via engine/API local ou ponte equivalente
+### 1.3 Princípio inegociável
+Mesmo usando Next como host, a regra continua sendo:
 
-### 1.7 Cognitive Bridge
-É uma direção oficial do projeto:
-- IA externa precisa de uma camada que ensine o que é o Evolu[a]
-- essa ponte pode combinar skill/documentação + API introspectiva
+- o app é definido pelo **modelo**
+- o código do host é fino, genérico ou derivado
+- a evolução do app deve acontecer pelo modelo, não por edição manual do código React gerado/host
 
-### 1.8 Semantic Model Editor
-Sem IA, o usuário não deve ficar impotente.
+### 1.4 Roteamento mágico / dinâmico
+A direção atual favorece o uso de rotas dinâmicas/catch-all do Next, por exemplo:
+- `src/app/[[...slug]]/page.tsx`
 
-Direção atual:
-- fallback/manual via **Semantic Model Editor**
-- edição estrutural assistida do modelo
-- actions semânticas
-- autocomplete / validação / recipes
+Esse arquivo funciona como um **resolver/renderizador genérico**:
+- recebe a URL
+- resolve qual página do modelo corresponde à rota
+- renderiza a UI a partir do modelo
 
-### 1.9 Catálogo de actions
-- actions são centrais para o produto
-- mas não devem engessar o sistema
-- devem funcionar como camada extensível sobre o modelo canônico
-- com escape hatch pelo Semantic Model Editor
+Fluxo atual desejado:
 
-### 1.10 Evolução por fases
-O Evolu[a] deve ajudar apps a evoluir por estágios de maturidade, não apenas “gerar tudo de uma vez”.
+```txt
+URL -> Next dynamic route -> resolver do modelo -> renderer Evolu[a] -> UI
+```
 
-### 1.11 Self-Evolution
-Permanece como direção estratégica/horizonte:
-- o Evolu[a] deve caminhar para construir progressivamente partes de si mesmo
-- mas isso **não é foco imediato**
+Isso reduz bastante a necessidade de gerar uma árvore completa de `page.tsx` para cada tela no MVP.
 
-## 2. Mudança importante mais recente
+### 1.5 Modelo como fonte da verdade
+A direção atual aceita que o modelo inicial seja **mais simples e mais operacional**.
 
-A direção mais recente e mais forte não é mais:
-- local-first puro
-- nem SaaS-first puro
+Em vez de começar obrigatoriamente com uma separação física rígida como:
+- `structure.evolua.json`
+- `visual.evolua.json`
+- `data.evolua.json`
+- `behavior.evolua.json`
 
-### Estado atual mais coerente
-Um **ecossistema híbrido**:
+é aceitável começar com modelos mais unificados por página/rota, desde que:
+- o modelo continue sendo a origem real da interface
+- o runtime/renderer leia esse modelo
+- mudanças importantes sejam feitas no modelo, não no código host
 
-#### SaaS / plataforma
-Serve como fonte de:
-- catálogo oficial de actions
-- Cognitive Bridge oficial
-- inteligência oficial do sistema
-- templates/recipes
-- eventual sync/repositório/coordenação
+### 1.6 Multidimensionalidade continua viva
+A visão multidimensional **não foi abandonada**.
 
-#### Ambiente local de desenvolvimento
-Serve como lugar onde:
-- o app do usuário roda
-- o preview acontece
-- o editor pode rodar
-- a engine local pode operar o projeto
+Ela continua como horizonte arquitetural do Evolu[a], mas agora de maneira mais pragmática:
+- pode existir primeiro como **camadas conceituais internas do modelo**
+- não precisa obrigatoriamente virar uma explosão de arquivos e pastas no MVP
+- pode amadurecer por fases, guiada pelo uso real
 
-### Exemplo de experiência local
-- `localhost:3000` → app/preview
-- `localhost:4000` → editor Evolu[a]
+### 1.7 Posicionamento do produto
+Uma formulação útil para o momento:
 
-### VS Code
-- pode ser ferramenta complementar
-- idealmente com extensão oficial do Evolu[a]
-- não deve ser a única interface principal do produto
+> O Evolu[a] pode se tornar para apps Next.js algo parecido com o que o WordPress foi para sites — mas com foco em **modelo, estrutura viva e evolução semântica**, não apenas em conteúdo ou templates.
 
-## 3. O que está em aberto
+Importante: essa analogia ajuda a explicar, mas não deve reduzir o Evolu[a] a:
+- CMS tradicional
+- page builder
+- low-code raso
 
-- qual é a spec exata da API local mínima
-- como engine/editor/preview conversam na prática
-- como o catálogo oficial sincroniza com o ambiente local
-- se haverá `create-evolua` e `evolua dev` já no começo
-- como será a extensão VS Code
-- até onde vai o connector local opcional
+A diferença principal é esta:
 
-## 4. Hipóteses anteriores que hoje são menos centrais
+- no WordPress, a página ainda tende a terminar como **conteúdo/HTML** (mesmo quando há editor visual)
+- no Evolu[a], a tela deve nascer como **objeto semântico e dimensional**
+- ou seja: não é apenas “um pedaço de markup editável”, e sim uma estrutura com identidade, papel, relações, comportamento e projeções visuais
 
-### 4.1 Local-first puro + Tauri como eixo principal
-Foi uma hipótese válida, mas hoje está menos central do que a visão híbrida.
+Formulação mais precisa:
 
-### 4.2 SaaS-first puro como ambiente único
-Também foi importante como exploração, mas hoje a visão híbrida parece mais equilibrada.
+> WordPress organiza conteúdo que vira HTML.
+> Evolu[a] organiza telas e fluxos que nascem de um modelo semântico/dimensional e se projetam como aplicação.
 
-### 4.3 Dependência total de IA
-Hoje a direção melhor é:
-- IA muito importante
-- mas com fallback/manual via Semantic Model Editor + actions
+O diferencial continua sendo:
+- modelo como fonte de verdade
+- app como objeto evolutivo
+- IA operando sobre estrutura semântica
+- interface não tratada como HTML disfarçado, e sim como modelo vivo
 
-## 5. Decisão prática recente: target inicial Next.js
+---
 
-A direção prática mais recente ficou assim:
-- o projeto canônico continua em arquivos `.evolua.json`
-- o target inicial do ecossistema será **Next.js**
-- o Evolu[a] não precisa criar um motor HTML próprio no começo
-- ele pode materializar o modelo canônico em código Next.js
-- e deixar o `next dev` fazer o trabalho de runtime/renderização web
+## 2. O que está valendo menos agora
 
-Isso significa:
-- `.evolua` = fonte canônica
-- `evolua` = materializador/orquestrador
-- `next dev` = runtime web inicial do app
+### 2.1 CLI próprio como centro do desenvolvimento
+A ideia de `create-evolua` + `evolua dev` como núcleo obrigatório do fluxo perdeu força.
 
-## 6. Próximo passo mais coerente
+Essas ferramentas ainda podem existir no futuro como utilitários auxiliares para:
+- bootstrap
+- inspect
+- export
+- migração
+- materialização opcional
 
-O próximo passo mais útil agora é descrever e implementar o fluxo inicial de:
-- `create-evolua`
-- `evolua`
-- target `nextjs`
-- materialização do app canônico em projeto Next.js
-- editor vs preview
-- extensão VS Code
-- como a IA conversa com esse ambiente
+Mas **não precisam mais ser o coração do MVP**.
 
-## Resumo curto
+### 2.2 Materialização pesada como etapa obrigatória
+A ideia de gerar/espelhar um app Next inteiro em diretórios intermediários (`.evolua/nextjs-app` etc.) também perdeu centralidade.
 
-> O estado atual do Evolu[a] é um ecossistema híbrido: modelo multidimensional canônico com `structure`, `visual`, `data` e `behavior`; IA operando o app vivo; fallback por Semantic Model Editor + actions; e uma arquitetura combinando plataforma central (catálogo/inteligência) com ambiente local de desenvolvimento e preview.
+Pode continuar útil como:
+- export futuro
+- build target opcional
+- projeção de código materializado
+
+Mas não precisa ser a forma principal de iteração no começo.
+
+### 2.3 Generalidade precoce de múltiplos targets
+A ambição de tratar Next.js desde o início como apenas “um target entre muitos” fica menos central no curto prazo.
+
+A direção atual assume com mais honestidade:
+- o **host inicial é Next.js**
+- outros hosts/targets podem vir depois, se fizer sentido
+
+---
+
+## 3. Decisão prática atual
+
+A base nova do projeto deve seguir esta lógica:
+
+- `packages/evolua-next` como host principal inicial
+- `next dev` como fluxo normal de desenvolvimento
+- modelo do Evolu[a] vivendo dentro do projeto host
+- rota dinâmica do Next resolvendo páginas a partir do modelo
+- renderer do Evolu[a] interpretando esse modelo
+
+Em termos mentais:
+
+```txt
+Next = host/runtime
+Evolu[a] = modelo + resolver + renderer + inteligência estrutural
+```
+
+---
+
+## 4. Próximo passo mais coerente
+
+O próximo passo útil não é aumentar abstração.
+
+É consolidar o `packages/evolua-next` como prova viva desta direção:
+
+1. fortalecer o shape do modelo
+2. separar melhor resolver / renderer / tipos
+3. provar edição real do modelo alterando a UI em runtime
+4. explorar como layouts, nested routes e componentes compartilhados entram nessa arquitetura
+5. só depois decidir até onde vale reintroduzir materialização/export
+
+---
+
+## 5. Resumo curto
+
+> O estado atual do Evolu[a] mudou: o modelo continua sendo a fonte de verdade, mas Next.js passa a ser o host/runtime inicial do sistema. Em vez de depender de um pipeline pesado de materialização externa, o Evolu[a] pode usar rotas dinâmicas do Next para resolver e renderizar páginas diretamente a partir do modelo. Assim, o produto se aproxima de uma camada de autoria e evolução semântica sobre Next.js — não um replacement do framework, mas uma evolução da forma de construir apps sobre ele.
