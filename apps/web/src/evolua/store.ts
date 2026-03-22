@@ -1,47 +1,104 @@
+import { Prisma, type PageStatus } from "@prisma/client";
+
 import seedModel from "@/evolua/app.model.json";
 import { prisma } from "@/lib/prisma";
 
-import type { EvoluaAppModel, EvoluaPage } from "@/evolua/types";
+import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/evolua/types";
 
 const DEFAULT_PROJECT_SLUG = "default";
 const DEFAULT_PROJECT_NAME = "Evolu[a] Next Host";
 
-function parseModel(model: unknown): EvoluaAppModel {
-  return model as EvoluaAppModel;
+type SeedPage = {
+  path: string;
+  title: string;
+  status?: EvoluaPageStatus;
+  nodes: EvoluaPage["nodes"];
+  visual?: EvoluaPage["visual"];
+};
+
+function normalizePath(path: string): string {
+  if (!path) return "/";
+  if (path.startsWith("/")) return path;
+  return `/${path}`;
+}
+
+function buildSeedPages(): SeedPage[] {
+  return seedModel.pages.map((page) => ({
+    path: normalizePath(page.path),
+    title: page.title,
+    status: "published",
+    nodes: page.nodes as unknown as EvoluaPage["nodes"],
+    visual: page.visual as unknown as EvoluaPage["visual"] | undefined,
+  }));
+}
+
+function asInputJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
+
+function asNullableInputJson(value: unknown): Prisma.InputJsonValue | Prisma.NullTypes.DbNull {
+  return value === undefined ? Prisma.DbNull : asInputJson(value);
+}
+
+function mapPageFromDb(page: {
+  id: string;
+  path: string;
+  title: string;
+  status: PageStatus;
+  nodes: Prisma.JsonValue;
+  visual: Prisma.JsonValue | null;
+}): EvoluaPage {
+  return {
+    id: page.id,
+    path: page.path,
+    title: page.title,
+    status: page.status,
+    nodes: page.nodes as EvoluaPage["nodes"],
+    visual: (page.visual as EvoluaPage["visual"] | null) ?? undefined,
+  };
 }
 
 export async function ensureDefaultProject() {
-  const existing = await prisma.evoluaProject.findUnique({
+  const project = await prisma.project.upsert({
     where: { slug: DEFAULT_PROJECT_SLUG },
-    select: { id: true },
-  });
-
-  if (existing) {
-    return existing;
-  }
-
-  return prisma.evoluaProject.create({
-    data: {
+    update: {
+      name: DEFAULT_PROJECT_NAME,
+      description: "Default Evolu[a] project bootstrapped from local seed model.",
+    },
+    create: {
       slug: DEFAULT_PROJECT_SLUG,
       name: DEFAULT_PROJECT_NAME,
       description: "Default Evolu[a] project bootstrapped from local seed model.",
-      model: seedModel,
-      versions: {
-        create: {
-          version: 1,
-          note: "Initial seed imported from app.model.json",
-          model: seedModel,
-        },
-      },
     },
     select: { id: true },
   });
+
+  const existingPages = await prisma.page.count({
+    where: { projectId: project.id },
+  });
+
+  if (existingPages === 0) {
+    const seedPages = buildSeedPages();
+
+    await prisma.page.createMany({
+      data: seedPages.map((page) => ({
+        projectId: project.id,
+        path: page.path,
+        title: page.title,
+        status: page.status ?? "published",
+        nodes: asInputJson(page.nodes),
+        visual: asNullableInputJson(page.visual),
+      })),
+    });
+  }
+
+  return project;
 }
 
 export async function getDefaultProject() {
   await ensureDefaultProject();
 
-  const project = await prisma.evoluaProject.findUnique({
+  const project = await prisma.project.findUnique({
     where: { slug: DEFAULT_PROJECT_SLUG },
   });
 
@@ -49,68 +106,127 @@ export async function getDefaultProject() {
     throw new Error("Could not load default Evolu[a] project.");
   }
 
-  return {
-    ...project,
-    model: parseModel(project.model),
-  };
+  return project;
 }
 
 export async function getAppModel(): Promise<EvoluaAppModel> {
   const project = await getDefaultProject();
-  return project.model;
+  const pages = await getAllPages();
+
+  return {
+    app: {
+      id: `project:${project.id}`,
+      name: project.slug,
+      title: project.name,
+    },
+    pages,
+  };
 }
 
 export async function getAllPages(): Promise<EvoluaPage[]> {
-  const model = await getAppModel();
-  return model.pages;
+  const project = await getDefaultProject();
+
+  const pages = await prisma.page.findMany({
+    where: { projectId: project.id },
+    orderBy: { path: "asc" },
+  });
+
+  return pages.map(mapPageFromDb);
 }
 
 export async function getPageById(pageId: string): Promise<EvoluaPage | null> {
-  const pages = await getAllPages();
-  return pages.find((page: EvoluaPage) => page.id === pageId) ?? null;
+  await ensureDefaultProject();
+
+  const page = await prisma.page.findFirst({
+    where: {
+      id: pageId,
+      project: { slug: DEFAULT_PROJECT_SLUG },
+    },
+  });
+
+  return page ? mapPageFromDb(page) : null;
 }
 
 export async function getPageByPath(path: string): Promise<EvoluaPage | null> {
-  const pages = await getAllPages();
-  return pages.find((page: EvoluaPage) => page.path === path) ?? null;
+  await ensureDefaultProject();
+
+  const page = await prisma.page.findFirst({
+    where: {
+      path: normalizePath(path),
+      status: "published",
+      project: { slug: DEFAULT_PROJECT_SLUG },
+    },
+  });
+
+  return page ? mapPageFromDb(page) : null;
 }
 
 export async function updatePageInModel(
   pageId: string,
   updater: (page: EvoluaPage) => EvoluaPage,
 ): Promise<EvoluaAppModel> {
-  const project = await getDefaultProject();
-  const model: EvoluaAppModel = project.model;
-  const currentPage = model.pages.find((page: EvoluaPage) => page.id === pageId);
+  const currentPage = await getPageById(pageId);
 
   if (!currentPage) {
     throw new Error(`Could not find page ${pageId}`);
   }
 
-  const nextModel: EvoluaAppModel = {
-    ...model,
-    pages: model.pages.map((page: EvoluaPage) => (page.id === pageId ? updater(page) : page)),
-  };
+  const nextPage = updater(currentPage);
+  const nextPath = normalizePath(nextPage.path);
 
-  await prisma.evoluaProject.update({
-    where: { slug: DEFAULT_PROJECT_SLUG },
+  await prisma.page.update({
+    where: { id: pageId },
     data: {
-      model: nextModel,
+      path: nextPath,
+      title: nextPage.title,
+      status: nextPage.status,
+      nodes: asInputJson(nextPage.nodes),
+      visual: asNullableInputJson(nextPage.visual),
     },
   });
 
-  const versionCount = await prisma.evoluaProjectVersion.count({
-    where: { projectId: project.id },
+  return getAppModel();
+}
+
+export async function getRuntimePageByProjectSlugAndPath(projectSlug: string, path: string) {
+  await ensureDefaultProject();
+
+  const project = await prisma.project.findUnique({
+    where: { slug: projectSlug },
+    select: { id: true, slug: true, name: true },
   });
 
-  await prisma.evoluaProjectVersion.create({
-    data: {
+  if (!project) {
+    return null;
+  }
+
+  const page = await prisma.page.findFirst({
+    where: {
       projectId: project.id,
-      version: versionCount + 1,
-      note: `Updated page ${pageId}`,
-      model: nextModel,
+      path: normalizePath(path),
+      status: "published",
+    },
+    select: {
+      id: true,
+      path: true,
+      title: true,
+      nodes: true,
+      visual: true,
     },
   });
 
-  return nextModel;
+  if (!page) {
+    return { project, page: null };
+  }
+
+  return {
+    project,
+    page: {
+      id: page.id,
+      path: page.path,
+      title: page.title,
+      nodes: page.nodes,
+      visual: page.visual,
+    },
+  };
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 import { updatePageBasics } from "@/app/evolua/actions";
 import { getPageById } from "@/evolua/store";
 import type { EvoluaNode } from "@/evolua/types";

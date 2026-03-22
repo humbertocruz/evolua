@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { normalizePathFromSlug, renderPage } from "@/evolua/runtime";
+
+export const dynamic = "force-dynamic";
 import { getPageByPath } from "@/evolua/store";
 
 export default async function EvoluaDynamicPage({

@@ -5,10 +5,13 @@ export type EvoluaNode = {
   href?: string;
 };
 
+export type EvoluaPageStatus = "draft" | "published";
+
 export type EvoluaPage = {
   id: string;
   path: string;
   title: string;
+  status: EvoluaPageStatus;
   nodes: EvoluaNode[];
   visual?: Record<string, { color?: string; tone?: "muted" | "default" }>;
 };

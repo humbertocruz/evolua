@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { getAllPages } from "@/evolua/store";
+
+export const dynamic = "force-dynamic";
 import type { EvoluaPage } from "@/evolua/types";
 
 export default async function EvoluaPagesIndexPage() {
