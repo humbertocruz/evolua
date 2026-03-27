@@ -59,25 +59,15 @@ function mapPageFromDb(page: {
 }
 
 export async function ensureDefaultProject() {
-  // Find by slug alone for demo purposes (no userId needed)
-  const existing = await prisma.project.findFirst({
+  const project = await prisma.project.upsert({
     where: { slug: DEFAULT_PROJECT_SLUG },
-    select: { id: true },
-  });
-
-  if (existing) return existing;
-
-  // Create with a dummy owner first (for demo only)
-  const { getOrCreateDemoUser } = await import("./demo-user");
-  const user = await getOrCreateDemoUser();
-
-  const project = await prisma.project.create({
-    data: {
+    update: {},
+    create: {
       slug: DEFAULT_PROJECT_SLUG,
       name: DEFAULT_PROJECT_NAME,
       description: "Default Evolu[a] project bootstrapped from local seed model.",
       apiKey: "pk_demo_" + Math.random().toString(36).slice(2, 18),
-      ownerId: user.id,
+      ownerId: (await getOrCreateDemoUser()).id,
     },
     select: { id: true },
   });

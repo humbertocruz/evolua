@@ -22,7 +22,7 @@ model User {
 
 model Project {
   id          String   @id @default(cuid())
-  slug        String
+  slug        String   @unique  // globally unique for the SaaS demo
   name        String
   description String?
   apiKey      String   @unique
@@ -33,7 +33,6 @@ model Project {
 
   owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  @@unique([ownerId, slug])
   @@map("projects")
 }
 
