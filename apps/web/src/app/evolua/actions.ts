@@ -80,3 +80,48 @@ export async function reorderNodes(pageId: string, nodeIds: string[]) {
   revalidatePath("/evolua/pages");
   revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
 }
+
+// ─── Page lifecycle ─────────────────────────────────────────
+
+export async function createPage(formData: FormData) {
+  const title = String(formData.get("title") ?? "").trim();
+  const path = String(formData.get("path") ?? "").trim();
+
+  if (!title || !path) {
+    throw new Error("Título e path são obrigatórios.");
+  }
+
+  const { createPage } = await import("@/evolua/store");
+  const page = await createPage(title, path);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+
+  return page;
+}
+
+export async function deletePageAction(pageId: string) {
+  const { deletePage } = await import("@/evolua/store");
+  await deletePage(pageId);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+}
+
+export async function publishPageAction(pageId: string) {
+  const { publishPage } = await import("@/evolua/store");
+  await publishPage(pageId);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+export async function unpublishPageAction(pageId: string) {
+  const { unpublishPage } = await import("@/evolua/store");
+  await unpublishPage(pageId);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   addNodeToPage,
   updateNodeInPage,
   removeNodeFromPage,
+  publishPageAction,
+  unpublishPageAction,
 } from "@/app/evolua/actions";
 import type { EvoluaNode } from "@/evolua/types";
 
@@ -36,6 +38,17 @@ export function PageEditor({ page }: Props) {
   const [nodes, setNodes] = useState<EvoluaNode[]>(page.nodes);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+
+  function handlePublish() {
+    startTransition(async () => {
+      if (page.status === "published") {
+        await unpublishPageAction(page.id);
+      } else {
+        await publishPageAction(page.id);
+      }
+      router.refresh();
+    });
+  }
 
   // ─── Add ──────────────────────────────────────────────────
 
@@ -172,6 +185,18 @@ export function PageEditor({ page }: Props) {
         </div>
 
         <PageMetaForm page={page} onSave={() => router.refresh()} />
+
+        <button
+          onClick={handlePublish}
+          disabled={isPending}
+          className={`w-full rounded-2xl px-4 py-3 text-sm font-medium transition ${
+            page.status === "published"
+              ? "border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`}
+        >
+          {page.status === "published" ? "📝 Voltar para rascunho" : "🚀 Publicar página"}
+        </button>
 
         <div className="space-y-3 rounded-2xl border border-dashed border-zinc-200 p-4 text-sm leading-6 text-zinc-600">
           <p className="font-medium text-zinc-800">Futuro:</p>

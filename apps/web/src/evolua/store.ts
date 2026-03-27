@@ -230,3 +230,42 @@ export async function getRuntimePageByProjectSlugAndPath(projectSlug: string, pa
     },
   };
 }
+
+// ─── Create & Delete ────────────────────────────────────────
+
+export async function createPage(
+  title: string,
+  path: string
+): Promise<{ id: string; path: string }> {
+  const project = await getDefaultProject();
+
+  const page = await prisma.page.create({
+    data: {
+      projectId: project.id,
+      title,
+      path: normalizePath(path),
+      status: "draft",
+      nodes: asInputJson([]),
+    },
+  });
+
+  return { id: page.id, path: page.path };
+}
+
+export async function deletePage(pageId: string): Promise<void> {
+  await prisma.page.delete({ where: { id: pageId } });
+}
+
+export async function publishPage(pageId: string): Promise<void> {
+  await prisma.page.update({
+    where: { id: pageId },
+    data: { status: "published" },
+  });
+}
+
+export async function unpublishPage(pageId: string): Promise<void> {
+  await prisma.page.update({
+    where: { id: pageId },
+    data: { status: "draft" },
+  });
+}
