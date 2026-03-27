@@ -3,6 +3,15 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma";
 import seedModel from "../src/evolua/app.model.json";
 
+function generateApiKey(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let key = "pk_";
+  for (let i = 0; i < 32; i++) {
+    key += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return key;
+}
+
 async function main() {
   // Create demo user
   const passwordHash = await bcrypt.hash("evolua123", 12);
@@ -26,6 +35,7 @@ async function main() {
       slug: "default",
       name: "Meu Projeto",
       description: "Projeto padrão do Evolu[a].",
+      apiKey: generateApiKey(),
       ownerId: user.id,
     },
   });

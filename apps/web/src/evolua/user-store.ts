@@ -3,6 +3,15 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+
+function generateApiKey(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let key = "pk_";
+  for (let i = 0; i < 32; i++) {
+    key += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return key;
+}
 import type { PageStatus } from "@prisma/client";
 import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/evolua/types";
 
@@ -41,6 +50,7 @@ export async function getUserProjects(userId: string) {
       slug: true,
       name: true,
       description: true,
+      apiKey: true,
       createdAt: true,
       _count: { select: { pages: true } },
     },
@@ -57,10 +67,30 @@ export async function createProject(userId: string, name: string, slug: string) 
     data: {
       slug,
       name,
+      apiKey: generateApiKey(),
       ownerId: userId,
     },
   });
   return project;
+}
+
+export async function getProjectByApiKey(apiKey: string) {
+  return prisma.project.findUnique({
+    where: { apiKey },
+    include: { owner: { select: { id: true, email: true, name: true } } },
+  });
+}
+
+export async function regenerateApiKey(projectId: string, userId: string) {
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, ownerId: userId },
+  });
+  if (!project) throw new Error("Project not found");
+
+  return prisma.project.update({
+    where: { id: projectId },
+    data: { apiKey: generateApiKey() },
+  });
 }
 
 export async function getProjectBySlug(userId: string, slug: string) {

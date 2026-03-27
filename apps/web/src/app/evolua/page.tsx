@@ -80,7 +80,7 @@ export default async function EvoluaHomePage() {
   );
 }
 
-async function ProjectCard({ project }: { project: { id: string; name: string; slug: string; description?: string; pageCount: number } }) {
+async function ProjectCard({ project }: { project: { id: string; name: string; slug: string; description?: string; pageCount: number; apiKey: string } }) {
   return (
     <Link
       href={`/evolua/projects/${project.id}/pages`}
@@ -98,7 +98,10 @@ async function ProjectCard({ project }: { project: { id: string; name: string; s
       {project.description && (
         <p className="mt-3 text-sm text-zinc-600 line-clamp-2">{project.description}</p>
       )}
-      <p className="mt-4 text-xs font-medium text-violet-600 opacity-0 transition group-hover:opacity-100">
+      <div className="mt-4 rounded-xl bg-zinc-100 p-2 text-xs font-mono text-zinc-500 truncate">
+        {project.apiKey}
+      </div>
+      <p className="mt-2 text-xs text-violet-600 opacity-0 transition group-hover:opacity-100">
         Gerenciar →
       </p>
     </Link>
