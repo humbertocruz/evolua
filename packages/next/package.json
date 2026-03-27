@@ -1,10 +1,15 @@
 {
   "name": "@evolua/next",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Runtime leve para Next.js conectar no Evolua SaaS",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "echo '@evolua/next build placeholder'",
-    "lint": "echo '@evolua/next lint placeholder'"
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": "^14",
+    "react": "^18"
   }
 }
