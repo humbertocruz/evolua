@@ -1,9 +1,7 @@
-import { getAllPages } from "@/evolua/store";
-import { PagesList } from "./pages-list";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function EvoluaPagesIndexPage() {
-  const pages = await getAllPages();
-  return <PagesList pages={pages} />;
+// Legacy route — pages are now scoped to a project
+// Users should go through /evolua → select project → pages
+export default function LegacyPagesRedirect() {
+  redirect("/evolua");
 }

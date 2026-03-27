@@ -1,98 +1,54 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
+import {
+  getUserProjects,
+  createProject as storeCreateProject,
+  getPageById,
+  updatePage,
+  deletePage,
+  publishPage,
+  unpublishPage,
+  addNodeToPage,
+  updateNodeInPage,
+  removeNodeFromPage,
+} from "@/evolua/user-store";
 
-import { updatePageInModel } from "@/evolua/store";
-import type { EvoluaNode } from "@/evolua/types";
-
-// ─── Página ────────────────────────────────────────────────
-
-export async function updatePageBasics(formData: FormData) {
-  const pageId = String(formData.get("pageId") ?? "").trim();
-  const title = String(formData.get("title") ?? "").trim();
-  const path = String(formData.get("path") ?? "").trim();
-
-  if (!pageId || !title || !path.startsWith("/")) {
-    throw new Error("Invalid page payload.");
-  }
-
-  await updatePageInModel(pageId, (page) => ({
-    ...page,
-    title,
-    path,
-  }));
-
-  revalidatePath("/evolua");
-  revalidatePath("/evolua/pages");
-  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
-  revalidatePath(path);
+async function getUserId(): Promise<string> {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  return session.user.id;
 }
 
-// ─── Nodes ─────────────────────────────────────────────────
+// ─── Projects ────────────────────────────────────────────────
 
-export async function addNodeToPage(pageId: string, node: EvoluaNode) {
-  await updatePageInModel(pageId, (page) => ({
-    ...page,
-    nodes: [...page.nodes, node],
-  }));
-
-  revalidatePath("/evolua");
-  revalidatePath("/evolua/pages");
-  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+export async function getProjectsAction() {
+  const userId = await getUserId();
+  return getUserProjects(userId);
 }
 
-export async function updateNodeInPage(
-  pageId: string,
-  nodeId: string,
-  updates: Partial<Omit<EvoluaNode, "id">>
-) {
-  await updatePageInModel(pageId, (page) => ({
-    ...page,
-    nodes: page.nodes.map((n) =>
-      n.id === nodeId ? { ...n, ...updates } : n
-    ),
-  }));
+export async function createProjectAction(formData: FormData) {
+  const userId = await getUserId();
+  const name = String(formData.get("name") ?? "").trim();
+  const slug = String(formData.get("slug") ?? "").trim().toLowerCase().replace(/\s+/g, "-");
 
+  if (!name || !slug) throw new Error("Nome e slug são obrigatórios.");
+
+  const project = await storeCreateProject(userId, name, slug);
   revalidatePath("/evolua");
-  revalidatePath("/evolua/pages");
-  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
-}
-
-export async function removeNodeFromPage(pageId: string, nodeId: string) {
-  await updatePageInModel(pageId, (page) => ({
-    ...page,
-    nodes: page.nodes.filter((n) => n.id !== nodeId),
-  }));
-
-  revalidatePath("/evolua");
-  revalidatePath("/evolua/pages");
-  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
-}
-
-export async function reorderNodes(pageId: string, nodeIds: string[]) {
-  await updatePageInModel(pageId, (page) => {
-    const nodeMap = Object.fromEntries(page.nodes.map((n) => [n.id, n]));
-    const reordered = nodeIds.map((id) => nodeMap[id]).filter(Boolean);
-    return { ...page, nodes: reordered };
-  });
-
-  revalidatePath("/evolua");
-  revalidatePath("/evolua/pages");
-  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+  return project;
 }
 
 // ─── Page lifecycle ─────────────────────────────────────────
 
-export async function createPage(formData: FormData) {
-  const title = String(formData.get("title") ?? "").trim();
-  const path = String(formData.get("path") ?? "").trim();
+export async function createPageAction(projectId: string, title: string, path: string) {
+  const userId = await getUserId();
 
-  if (!title || !path) {
-    throw new Error("Título e path são obrigatórios.");
-  }
+  if (!projectId || !title || !path) throw new Error("Dados incompletos.");
 
-  const { createPage } = await import("@/evolua/store");
-  const page = await createPage(title, path);
+  const { createPage } = await import("@/evolua/user-store");
+  const page = await createPage(projectId, title, path);
 
   revalidatePath("/evolua");
   revalidatePath("/evolua/pages");
@@ -100,17 +56,35 @@ export async function createPage(formData: FormData) {
   return page;
 }
 
+export async function updatePageBasics(formData: FormData) {
+  const userId = await getUserId();
+  const pageId = String(formData.get("pageId") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const path = String(formData.get("path") ?? "").trim();
+
+  if (!pageId || !title || !path.startsWith("/")) {
+    throw new Error("Dados inválidos.");
+  }
+
+  await updatePage(pageId, userId, (page) => ({ ...page, title, path }));
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+  revalidatePath(path);
+}
+
 export async function deletePageAction(pageId: string) {
-  const { deletePage } = await import("@/evolua/store");
-  await deletePage(pageId);
+  const userId = await getUserId();
+  await deletePage(pageId, userId);
 
   revalidatePath("/evolua");
   revalidatePath("/evolua/pages");
 }
 
 export async function publishPageAction(pageId: string) {
-  const { publishPage } = await import("@/evolua/store");
-  await publishPage(pageId);
+  const userId = await getUserId();
+  await publishPage(pageId, userId);
 
   revalidatePath("/evolua");
   revalidatePath("/evolua/pages");
@@ -118,10 +92,50 @@ export async function publishPageAction(pageId: string) {
 }
 
 export async function unpublishPageAction(pageId: string) {
-  const { unpublishPage } = await import("@/evolua/store");
-  await unpublishPage(pageId);
+  const userId = await getUserId();
+  await unpublishPage(pageId, userId);
 
   revalidatePath("/evolua");
   revalidatePath("/evolua/pages");
   revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+// ─── Nodes ─────────────────────────────────────────────────
+
+export async function addNodeToPageAction(pageId: string, node: { id: string; kind: string; text: string; href?: string }) {
+  const userId = await getUserId();
+  await addNodeToPage(pageId, userId, node);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+export async function updateNodeInPageAction(
+  pageId: string,
+  nodeId: string,
+  updates: Partial<{ text: string; href?: string; kind?: string }>
+) {
+  const userId = await getUserId();
+  await updateNodeInPage(pageId, userId, nodeId, updates);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+export async function removeNodeFromPageAction(pageId: string, nodeId: string) {
+  const userId = await getUserId();
+  await removeNodeFromPage(pageId, userId, nodeId);
+
+  revalidatePath("/evolua");
+  revalidatePath("/evolua/pages");
+  revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+// ─── Getters (for server components) ──────────────────────
+
+export async function getPageAction(pageId: string) {
+  const userId = await getUserId();
+  return getPageById(pageId, userId);
 }

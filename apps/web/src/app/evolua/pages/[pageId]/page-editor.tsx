@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   addNodeToPage,
   updateNodeInPage,
@@ -19,6 +20,7 @@ type Props = {
     status: string;
     nodes: EvoluaNode[];
   };
+  projectId?: string;
 };
 
 const NODE_KINDS = [
