@@ -1,44 +1,42 @@
 import "dotenv/config";
-
-import { Prisma, PrismaClient } from "@prisma/client";
-
+import bcrypt from "bcryptjs";
+import { prisma } from "../src/lib/prisma";
 import seedModel from "../src/evolua/app.model.json";
 
-const prisma = new PrismaClient({
-  datasources: { db: { url: process.env.DATABASE_URL } },
-});
-
-const DEMO_PROJECT_SLUG = "default";
-const DEMO_PROJECT_NAME = "Evolu[a] Next Host";
-const DEMO_PATHS = new Set(["/", "/login", "/forgot-password"]);
-
-function asInputJson(value: unknown): Prisma.InputJsonValue {
-  return value as Prisma.InputJsonValue;
-}
-
-function asNullableInputJson(value: unknown): Prisma.InputJsonValue | Prisma.NullTypes.DbNull {
-  return value === undefined ? Prisma.DbNull : asInputJson(value);
-}
-
 async function main() {
-  const project = await prisma.project.upsert({
-    where: { slug: DEMO_PROJECT_SLUG },
-    update: {
-      name: DEMO_PROJECT_NAME,
-      description: "Default Evolu[a] project bootstrapped from local seed model.",
-    },
+  // Create demo user
+  const passwordHash = await bcrypt.hash("evolua123", 12);
+  const user = await prisma.user.upsert({
+    where: { email: "demo@evolua.app" },
+    update: {},
     create: {
-      slug: DEMO_PROJECT_SLUG,
-      name: DEMO_PROJECT_NAME,
-      description: "Default Evolu[a] project bootstrapped from local seed model.",
+      email: "demo@evolua.app",
+      name: "Demo User",
+      passwordHash,
     },
-    select: { id: true, slug: true },
   });
 
+  console.log(`User: demo@evolua.app / evolua123`);
+
+  // Create default project
+  const project = await prisma.project.upsert({
+    where: { ownerId_slug: { ownerId: user.id, slug: "default" } },
+    update: {},
+    create: {
+      slug: "default",
+      name: "Meu Projeto",
+      description: "Projeto padrão do Evolu[a].",
+      ownerId: user.id,
+    },
+  });
+
+  console.log(`Project: ${project.slug}`);
+
+  // Seed pages from app.model.json
+  const DEMO_PATHS = new Set(["/", "/login", "/forgot-password"]);
+
   for (const page of seedModel.pages) {
-    if (!DEMO_PATHS.has(page.path)) {
-      continue;
-    }
+    if (!DEMO_PATHS.has(page.path)) continue;
 
     await prisma.page.upsert({
       where: {
@@ -47,31 +45,24 @@ async function main() {
           path: page.path,
         },
       },
-      update: {
-        title: page.title,
-        status: "published",
-        nodes: asInputJson(page.nodes),
-        visual: asNullableInputJson(page.visual),
-      },
+      update: {},
       create: {
         projectId: project.id,
         path: page.path,
         title: page.title,
         status: "published",
-        nodes: asInputJson(page.nodes),
-        visual: asNullableInputJson(page.visual),
+        nodes: page.nodes as unknown[],
+        visual: page.visual ?? undefined,
       },
     });
   }
 
-  console.log(`Seeded project '${project.slug}' with runtime demo pages.`);
+  console.log(`Seeded ${seedModel.pages.filter((p) => DEMO_PATHS.has(p.path)).length} pages.`);
 }
 
 main()
-  .catch((error) => {
-    console.error(error);
+  .catch((err) => {
+    console.error(err);
     process.exitCode = 1;
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

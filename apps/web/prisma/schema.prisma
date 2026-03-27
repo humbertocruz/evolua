@@ -6,15 +6,33 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Multi-tenant: User → Project → Page ─────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+
+  @@map("users")
+}
+
 model Project {
   id          String   @id @default(cuid())
-  slug        String   @unique
+  slug        String
   name        String
   description String?
+  ownerId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   pages       Page[]
 
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerId, slug])
   @@map("projects")
 }
 
