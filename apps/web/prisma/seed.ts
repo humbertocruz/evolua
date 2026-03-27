@@ -4,7 +4,9 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 import seedModel from "../src/evolua/app.model.json";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DATABASE_URL } },
+});
 
 const DEMO_PROJECT_SLUG = "default";
 const DEMO_PROJECT_NAME = "Evolu[a] Next Host";
