@@ -153,8 +153,8 @@ export interface EvoluaProjectResponse {
 
 export interface EvoluaConfig {
   projectId: string;
-  endpoint: string; // URL do Evolua Cloud
-  token?: string;
+  endpoint: string; // URL do Evolu[a] Cloud (ex: https://evolua.cloud)
+  apiKey: string;   // Chave do projeto (pk_xxx do dashboard)
   debug?: boolean;
 }
 

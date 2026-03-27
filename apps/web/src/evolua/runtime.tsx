@@ -1,18 +1,17 @@
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
+import type { EvoluaNode } from "@/evolua/types";
 
-import type { EvoluaPage, EvoluaNode } from "@/evolua/types";
-
-function getNodeStyle(page: EvoluaPage, nodeId: string): CSSProperties {
-  const visual = page.visual?.[nodeId];
+function getNodeStyle(visual: Record<string, unknown> | undefined, nodeId: string): CSSProperties {
+  const nodeVisual = visual?.[nodeId] as Record<string, unknown> | undefined;
   return {
-    color: visual?.color,
-    opacity: visual?.tone === "muted" ? 0.7 : undefined,
+    color: (nodeVisual?.color as string) ?? undefined,
+    opacity: nodeVisual?.tone === "muted" ? 0.7 : undefined,
   };
 }
 
-function renderNode(page: EvoluaPage, node: EvoluaNode): ReactNode {
-  const style = getNodeStyle(page, node.id);
+function renderNode(node: EvoluaNode, visual?: Record<string, unknown>): React.ReactNode {
+  const style = getNodeStyle(visual, node.id);
 
   switch (node.kind) {
     case "heading":
@@ -54,11 +53,17 @@ export function normalizePathFromSlug(slug?: string[]) {
   return `/${slug.join("/")}`;
 }
 
-export function renderPage(page: EvoluaPage) {
+export function renderPage(
+  page: { nodes: unknown; visual?: unknown },
+  options: { className?: string } = {}
+) {
+  const nodes = page.nodes as EvoluaNode[];
+  const visual = page.visual as Record<string, unknown> | undefined;
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-6 py-16 text-zinc-950">
+    <main className={`flex min-h-screen items-center justify-center bg-zinc-50 px-6 py-16 text-zinc-950 ${options.className ?? ""}`}>
       <section className="flex w-full max-w-3xl flex-col gap-6 rounded-3xl border border-zinc-200 bg-white p-10 shadow-sm">
-        {page.nodes.map((node) => renderNode(page, node))}
+        {nodes.map((node) => renderNode(node, visual))}
       </section>
     </main>
   );

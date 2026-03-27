@@ -5,7 +5,7 @@ let config: EvoluaConfig | null = null;
 export function initEvolua(newConfig: EvoluaConfig) {
   config = newConfig;
   if (config.debug) {
-    console.log("[Evolua] Initialized with config:", {
+    console.log("[Evolua] Initialized:", {
       projectId: config.projectId,
       endpoint: config.endpoint,
     });

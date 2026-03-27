@@ -1,9 +1,4 @@
-import type {
-  EvoluaConfig,
-  EvoluaPageResponse,
-  EvoluaProjectResponse,
-  ProjectionKind,
-} from "@evolua/types";
+import type { EvoluaConfig } from "./types";
 import { getConfig } from "./config";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -13,7 +8,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${cfg.endpoint}${path}`;
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    ...(cfg.token ? { Authorization: `Bearer ${cfg.token}` } : {}),
+    ...(cfg.apiKey ? { "x-api-key": cfg.apiKey } : {}),
     ...options.headers,
   };
 
@@ -28,22 +23,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 // ─── API Calls ─────────────────────────────────────────────
 
-export async function fetchProject(projectId: string): Promise<EvoluaProjectResponse> {
-  return request<EvoluaProjectResponse>(`/projects/${projectId}`);
+export async function fetchProjectPages(): Promise<{
+  project: { id: string; slug: string; name: string };
+  pages: Array<{ id: string; path: string; title: string }>;
+}> {
+  return request("/api/runtime/pages");
 }
 
-export async function fetchPage(
-  projectId: string,
-  route: string
-): Promise<EvoluaPageResponse> {
-  return request<EvoluaPageResponse>(
-    `/projects/${projectId}/pages?route=${encodeURIComponent(route)}`
-  );
-}
-
-export async function fetchProjection(
-  projectId: string,
-  projection: ProjectionKind
-): Promise<any> {
-  return request(`/projects/${projectId}/projections/${projection}`);
+export async function fetchPage(path: string): Promise<{
+  project: { id: string; slug: string; name: string };
+  page: { id: string; path: string; title: string; nodes: unknown; visual?: unknown };
+}> {
+  return request(`/api/runtime/project?path=${encodeURIComponent(path)}`);
 }

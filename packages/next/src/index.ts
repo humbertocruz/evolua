@@ -1,7 +1,7 @@
-// @evolua/next — Runtime leve para Next.js
-// Conecta no Evolua Cloud e renderiza o modelo localmente
+import type {
+  EvoluaConfig,
+} from "@evolua/types";
 
-export * from "./client";
-export * from "./components";
-export * from "./config";
+export { initEvolua, getConfig } from "./config";
+export { fetchProjectPages, fetchPage } from "./client";
 export * from "./renderer";
