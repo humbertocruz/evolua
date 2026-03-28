@@ -2,6 +2,7 @@ import { Prisma, type PageStatus } from "@prisma/client";
 
 import seedModel from "@/evolua/app.model.json";
 import { prisma } from "@/lib/prisma";
+import { getOrCreateDemoUser } from "./demo-user";
 
 import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/evolua/types";
 
