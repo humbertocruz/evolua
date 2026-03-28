@@ -16,7 +16,8 @@
     "prisma:generate:web": "bun --filter @evolua/web prisma:generate",
     "dev:web": "bun --filter @evolua/web dev",
     "build:web": "bun run prisma:generate:web && bun --filter @evolua/web build",
-    "lint:web": "bun --filter @evolua/web lint"
+    "lint:web": "bun --filter @evolua/web lint",
+    "publish": "bash scripts/publish.sh"
   },
   "devDependencies": {
     "turbo": "^2.5.6"

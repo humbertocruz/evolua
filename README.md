@@ -1,62 +1,75 @@
 # Evolu[a]
 
-Evolu[a] está entrando em uma fase mais clara:
-
 - **Evolu[a] Cloud** como produto SaaS
 - **Next.js do usuário** permanecendo livre
 - **runtime local leve** para resolver rotas e renderizar o que vem do Evolu[a]
 - **marketplace** como camada natural do ecossistema
 
-A direção oficial atual está em:
+A direção oficial atual está em `ideas/current-direction.md`.
 
-- `ideas/current-direction.md`
+## Arquitetura
 
-## Estrutura atual
-
-```txt
+```
 Evolua/
-  apps/
-    web/              # app principal do Evolu[a] (SaaS / cockpit / referência visual)
-  packages/
-    core/             # lógica central e experimentos reaproveitáveis
-  ideas/              # direção de produto, arquitetura e explorações conceituais
-  legacy/             # protótipos e material antigo preservado no repositório
+├── apps/
+│   └── web/                 # SaaS — cockpit, editor, home pública
+├── packages/
+│   ├── types/               # Contrato compartilhado (EvoluaPage, PageNode, etc.)
+│   ├── db/                  # Prisma schema + cliente singleton
+│   ├── ui/                  # Componentes React (Button, Card, Input)
+│   ├── runtime/             # Motor de renderização de nodes → React
+│   ├── core/                # Lógica central (experimentos)
+│   └── next/                # Runtime leve pra Next.js do usuário
+├── templates/
+│   └── default/             # Template oficial — o que o usuário baixa
+├── scripts/
+│   └── publish.sh           # Publish de todos os packages no npm
+└── ideas/
+    └── current-direction.md # Direção de produto
 ```
 
-## Pastas
+## Packages (@evolua/*)
 
-### `apps/web`
-App Next.js principal do projeto neste momento.
+| Package | Descrição |
+|---------|-----------|
+| `@evolua/types` | Tipos compartilhados (PageNode, VisualConfig, etc.) |
+| `@evolua/db` | Prisma schema + `createPrismaClient()` + seed |
+| `@evolua/ui` | Componentes React (Button, Card, Input) |
+| `@evolua/runtime` | `renderPage(page)` — renderiza nodes como React |
+| `@evolua/next` | Runtime leve pro Next.js do usuário |
 
-Hoje ele serve como:
-- base visual do cockpit do Evolu[a]
-- referência para o SaaS
-- lugar natural para continuar a evolução do produto web
-
-### `packages/core`
-Pacote central com código experimental/reaproveitável ligado ao núcleo conceitual do Evolu[a`.
-Ainda precisa ser refinado conforme a arquitetura nova for se consolidando.
-
-### `ideas/`
-Documentação viva de direção.
-Se houver conflito entre arquivos, use `ideas/current-direction.md` como fonte oficial.
-
-### `legacy/`
-Material antigo mantido por histórico e reaproveitamento pontual.
-Não deve ser tratado como base oficial da arquitetura atual.
-
-## Próximos passos naturais
-
-- transformar `apps/web` no embrião oficial do Evolu[a] SaaS
-- extrair, com calma, os futuros pacotes `@evolua/*` quando as fronteiras ficarem claras
-- adaptar o runtime para consumir dados remotos do Evolu[a] Cloud
-
-## Scripts úteis
-
-Da raiz do monorepo:
+## Dev
 
 ```bash
+# Rodar o SaaS localmente
 npm run dev:web
+
+# Build do SaaS
 npm run build:web
-npm run lint:web
+
+# Publicar packages no npm (requer NPM_TOKEN)
+export NPM_TOKEN=your_token_here
+npm run publish
 ```
+
+## Publish no npm
+
+O npmjs exige OAuth (token + 2FA) para publicar packages em scope.
+
+1. Crie um token em [npmjs.com/settings/tokens](https://www.npmjs.org/settings/tokens) — nível **Automation**
+2. `export NPM_TOKEN=xxxx`
+3. `npm run publish`
+
+O script `scripts/publish.sh` publica todos os packages de uma vez, **só versões novas** (não sobrepõe o que já existe no npm).
+
+## Dogfooding: Home do SaaS
+
+A home pública do SaaS (`/`) é renderizada pelo próprio `@evolua/runtime`, consumindo nodes do banco. Isso é a prova de conceito viva — "esta página foi feita com a ferramenta que você vai baixar".
+
+## Status atual
+
+- [x] Auth, Projects, Pages — funcionando no SaaS
+- [x] `@evolua/db`, `@evolua/ui`, `@evolua/runtime` — criados
+- [x] `scripts/publish.sh` — pronto pro npm
+- [ ] Home do SaaS renderizada pelo Evolua runtime (próximo passo)
+- [ ] Publish dos packages no npm

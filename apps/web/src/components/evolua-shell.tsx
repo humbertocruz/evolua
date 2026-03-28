@@ -6,7 +6,6 @@ import type { ReactNode } from "react";
 
 const navItems = [
   { href: "/evolua", label: "Dashboard", description: "Visão geral" },
-  { href: "/evolua/pages", label: "Pages", description: "Páginas do modelo" },
   { href: "/evolua/components", label: "Components", description: "Blocos reutilizáveis" },
   { href: "/evolua/datasources", label: "Datasources", description: "Conexões e dados" },
 ];

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getUserProjects, getProjectPages } from "@/evolua/user-store";
 import { CreatePageButton } from "./create-page-button";
-import { PagesList } from "../../pages/pages-list";
+import { PagesList } from "./pages-list";
 
 export default async function ProjectPagesPage({
   params,

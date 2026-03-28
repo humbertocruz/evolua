@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { EvoluaPage } from "@/evolua/types";
 import {
-  createPage,
+  createPageAction,
   deletePageAction,
   publishPageAction,
   unpublishPageAction,

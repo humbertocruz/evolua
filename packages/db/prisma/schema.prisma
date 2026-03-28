@@ -1,0 +1,50 @@
+// This is your development schema
+// For production, use schema.prod.prisma with PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime  @default(now())
+
+  projects Project[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  apiKey      String   @unique
+  ownerId     String
+  createdAt   DateTime @default(now())
+
+  owner User
+  pages Page[]
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  projectId String
+  path      String
+  title     String
+  status    String   @default("draft") // "draft" | "published"
+  nodes     String   @default("[]") // JSON string
+  visual    String   @default("{}") // JSON string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, path])
+}
