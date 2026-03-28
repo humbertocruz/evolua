@@ -3,51 +3,41 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma";
 import seedModel from "../src/evolua/app.model.json";
 
-function generateApiKey(): string {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let key = "pk_";
-  for (let i = 0; i < 32; i++) {
-    key += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return key;
-}
+const SAAS_SLUG = "evolua-saas";
+const DEMO_EMAIL = "demo@evolua.app";
+const DEMO_PASSWORD = "evolua2026";
 
 async function main() {
-  // Create demo user
-  const passwordHash = await bcrypt.hash("evolua123", 12);
+  // ── Demo user ────────────────────────────────────────────────
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
   const user = await prisma.user.upsert({
-    where: { email: "demo@evolua.app" },
+    where: { email: DEMO_EMAIL },
     update: {},
     create: {
-      email: "demo@evolua.app",
-      name: "Demo User",
+      email: DEMO_EMAIL,
+      name: "Admin",
       passwordHash,
     },
   });
+  console.log(`✅ User: ${user.email} / ${DEMO_PASSWORD}`);
 
-  console.log(`User: demo@evolua.app / evolua123`);
-
-  // Create default project
+  // ── SaaS public project ─────────────────────────────────────
   const project = await prisma.project.upsert({
-    where: { ownerId_slug: { ownerId: user.id, slug: "default" } },
+    where: { slug: SAAS_SLUG },
     update: {},
     create: {
-      slug: "default",
-      name: "Meu Projeto",
-      description: "Projeto padrão do Evolu[a].",
-      apiKey: generateApiKey(),
+      slug: SAAS_SLUG,
+      name: "Evolu[a] SaaS",
+      description: "Site público do Evolu[a] — modelo seedado do app.model.json",
+      apiKey: "pk_saas_" + Math.random().toString(36).slice(2, 18),
       ownerId: user.id,
     },
   });
+  console.log(`✅ Project: ${project.slug}`);
 
-  console.log(`Project: ${project.slug}`);
-
-  // Seed pages from app.model.json
-  const DEMO_PATHS = new Set(["/", "/login", "/forgot-password"]);
-
+  // ── Pages from app.model.json ───────────────────────────────
+  let seeded = 0;
   for (const page of seedModel.pages) {
-    if (!DEMO_PATHS.has(page.path)) continue;
-
     await prisma.page.upsert({
       where: {
         projectId_path: {
@@ -62,12 +52,14 @@ async function main() {
         title: page.title,
         status: "published",
         nodes: page.nodes as unknown[],
-        visual: page.visual ?? undefined,
+        visual: (page.visual as unknown[]) ?? [],
       },
     });
+    seeded++;
   }
+  console.log(`✅ ${seeded} pages seeded from app.model.json`);
 
-  console.log(`Seeded ${seedModel.pages.filter((p) => DEMO_PATHS.has(p.path)).length} pages.`);
+  console.log(`\n🚀 Seed completo!`);
 }
 
 main()

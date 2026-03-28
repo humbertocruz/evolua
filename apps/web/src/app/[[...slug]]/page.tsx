@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPageByPath } from "@/evolua/store";
+import { getDefaultProject, getPageByPath } from "@/evolua/store";
 import { renderPage } from "@/evolua/runtime";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +11,10 @@ export default async function EvoluaDynamicPage({
 }) {
   const { slug } = await params;
   const path = slug ? `/${slug.join("/")}` : "/";
-  const page = await getPageByPath(path);
+
+  // Use the default (demo) project for public pages
+  const project = await getDefaultProject();
+  const page = await getPageByPath(path, project.id);
 
   if (!page) {
     notFound();

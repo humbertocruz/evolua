@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { ensureDefaultProject } from "@/evolua/store";
+import seedModel from "@/evolua/app.model.json";
+
+function asInputJson(value: unknown) {
+  return value as import("@prisma/client/runtime/library").InputJsonValue;
+}
 
 export async function POST(req: Request) {
   try {
@@ -29,14 +35,27 @@ export async function POST(req: Request) {
       },
     });
 
-    // Create a default project for the new user
-    await prisma.project.create({
+    // Create a default project for the new user with seed pages
+    const project = await prisma.project.create({
       data: {
-        slug: "default",
+        slug: `user-${user.id.slice(0, 8)}`,
         name: "Meu Projeto",
+        apiKey: "pk_dev_" + Math.random().toString(36).slice(2, 18),
         ownerId: user.id,
       },
     });
+
+    // Seed pages from app.model.json
+    const seedPages = seedModel.pages.map((page) => ({
+      projectId: project.id,
+      path: page.path.startsWith("/") ? page.path : `/${page.path}`,
+      title: page.title,
+      status: "published" as const,
+      nodes: asInputJson(page.nodes),
+      visual: asInputJson(page.visual ?? {}),
+    }));
+
+    await prisma.page.createMany({ data: seedPages });
 
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
   } catch (err) {

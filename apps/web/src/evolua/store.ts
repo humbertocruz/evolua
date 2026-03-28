@@ -6,7 +6,7 @@ import { getOrCreateDemoUser } from "./demo-user";
 
 import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/evolua/types";
 
-const DEFAULT_PROJECT_SLUG = "default";
+const DEFAULT_PROJECT_SLUG = process.env.EVOLUA_PUBLIC_PROJECT_SLUG ?? "evolua-saas";
 const DEFAULT_PROJECT_NAME = "Evolu[a] Next Host";
 
 type SeedPage = {
@@ -17,7 +17,7 @@ type SeedPage = {
   visual?: EvoluaPage["visual"];
 };
 
-function normalizePath(path: string): string {
+export function normalizePath(path: string): string {
   if (!path) return "/";
   if (path.startsWith("/")) return path;
   return `/${path}`;
@@ -147,16 +147,21 @@ export async function getPageById(pageId: string): Promise<EvoluaPage | null> {
   return page ? mapPageFromDb(page) : null;
 }
 
-export async function getPageByPath(path: string): Promise<EvoluaPage | null> {
+export async function getPageByPath(path: string, projectId?: string): Promise<EvoluaPage | null> {
   await ensureDefaultProject();
 
-  const page = await prisma.page.findFirst({
-    where: {
-      path: normalizePath(path),
-      status: "published",
-      project: { slug: DEFAULT_PROJECT_SLUG },
-    },
-  });
+  const where: Parameters<typeof prisma.page.findFirst>[0]["where"] = {
+    path: normalizePath(path),
+    status: "published",
+  };
+
+  if (projectId) {
+    where.projectId = projectId;
+  } else {
+    where.project = { slug: DEFAULT_PROJECT_SLUG };
+  }
+
+  const page = await prisma.page.findFirst({ where });
 
   return page ? mapPageFromDb(page) : null;
 }
