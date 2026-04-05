@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@evolua/types": "workspace:*"
+    "@evolua/types": "file:../types"
   },
   "peerDependencies": {
     "next": "^14",

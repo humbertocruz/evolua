@@ -11,7 +11,7 @@
     "react-dom": "^18.x"
   },
   "dependencies": {
-    "@evolua/types": "workspace:*",
-    "@evolua/ui": "workspace:*"
+    "@evolua/types": "file:../types",
+    "@evolua/ui": "file:../ui"
   }
 }
