@@ -1,9 +1,8 @@
 {
-  "name": "evolua",
+  "name": "appware",
   "private": true,
   "version": "0.1.0",
-  "description": "Evolu[a] monorepo",
-  "packageManager": "npm@11.11.0",
+  "description": "Appware monorepo",
   "type": "module",
   "workspaces": [
     "apps/*",
