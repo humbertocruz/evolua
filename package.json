@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Evolu[a] monorepo",
-  "packageManager": "bun@1.3.11",
+  "packageManager": "npm@11.11.0",
   "type": "module",
   "workspaces": [
     "apps/*",
