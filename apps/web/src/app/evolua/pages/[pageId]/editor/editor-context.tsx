@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useRef } from "react";
-import type { NodeKindLiteral } from "@evolua/types";
+import type { NodeKindLiteral } from "@/packages/types";
 
 export interface EditorNode {
   id: string;

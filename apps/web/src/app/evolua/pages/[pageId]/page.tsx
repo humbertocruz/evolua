@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 
 import { getPageById, getProjectById } from "@/evolua/user-store";
-import type { EvoluaNode } from "@evolua/types";
+import type { EvoluaNode } from "@/packages/types";
 import { PageEditor } from "./page-editor";
 import { DeployPanel } from "./deploy-panel";
 

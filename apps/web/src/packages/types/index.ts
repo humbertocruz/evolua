@@ -117,6 +117,9 @@ export interface AppModel {
   nodes: Record<string, ViewNode | DataNode | BehaviorNode | RouteNode | BaseNode>;
 }
 
+/** @deprecated Use AppModel */
+export type EvoluaAppModel = AppModel;
+
 // ─── Contrato SaaS → Runtime ─────────────────────────────
 
 export type ProjectionKind = "visual" | "structure" | "data" | "behavior";
@@ -164,6 +167,32 @@ export interface EvoluaConfig {
 // ─── Renderable Node (o que o runtime recebe) ─────────────
 
 export type RenderableNode = ViewNode | DataNode | BehaviorNode | RouteNode;
+
+/** @deprecated Use RenderableNode */
+export type EvoluaNode = RenderableNode;
+
+/** @deprecated Use AppModel */
+export type EvoluaAppModel = AppModel;
+
+// ─── Prisma-backed types ───────────────────────────────────
+
+export type PageStatus = "draft" | "published";
+
+export interface Page {
+  id: string;
+  projectId: string;
+  path: string;
+  title: string;
+  status: PageStatus;
+  nodes: string;
+  visual?: string;
+}
+
+/** @deprecated Use Page */
+export type EvoluaPage = Page;
+
+/** @deprecated Use PageStatus */
+export type EvoluaPageStatus = PageStatus;
 
 export function isViewNode(node: BaseNode): node is ViewNode {
   return ["page", "layout", "section", "component", "slot", "text"].includes(node.kind);

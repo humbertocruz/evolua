@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import type { NodeKindLiteral } from "@evolua/types";
+import type { NodeKindLiteral } from "@/packages/types";
 
 type Node = {
   id: string;

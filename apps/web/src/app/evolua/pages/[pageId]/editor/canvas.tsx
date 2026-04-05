@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useEditor, canHaveChildren } from "./editor-context";
 import type { EditorNode } from "./editor-context";
-import type { NodeKindLiteral } from "@evolua/types";
+import type { NodeKindLiteral } from "@/packages/types";
 
 export function Canvas() {
   const { nodes, selectedNodeId, selectNode, moveNode, removeNode, addNode } = useEditor();

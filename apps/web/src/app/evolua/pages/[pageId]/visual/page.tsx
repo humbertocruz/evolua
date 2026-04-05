@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { getPageById, savePageNodes } from "@/evolua/user-store";
 import { VisualEditor } from "../editor/visual-editor";
 import type { EditorNode } from "../editor/editor-context";
-import type { NodeKindLiteral } from "@evolua/types";
+import type { NodeKindLiteral } from "@/packages/types";
 
 export const dynamic = "force-dynamic";
 

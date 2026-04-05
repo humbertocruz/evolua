@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
     const fileName = pathToFileName(page.path);
     const pageCode = renderPageNodesToTsx(
       page.path,
-      page.nodes as Array<{ kind: string; text: string; href?: string }>
+      JSON.parse(page.nodes) as Array<{ kind: string; text: string; href?: string }>
     );
     archive.append(pageCode, { name: `src/app/${fileName}` });
   }

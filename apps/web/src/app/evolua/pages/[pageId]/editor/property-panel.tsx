@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditor } from "./editor-context";
-import { getNodeFields, kindLabel } from "@evolua/types";
+import { getNodeFields, kindLabel } from "@/packages/types";
 import { z } from "zod";
 import { useState } from "react";
 

@@ -10,7 +10,7 @@ import {
   publishPageAction,
   unpublishPageAction,
 } from "@/app/evolua/actions";
-import type { EvoluaNode } from "@evolua/types";
+import type { EvoluaNode } from "@/packages/types";
 
 type Props = {
   page: {
@@ -18,7 +18,7 @@ type Props = {
     title: string;
     path: string;
     status: string;
-    nodes: EvoluaNode[];
+    nodes: unknown[];
   };
   projectId?: string;
 };
@@ -37,7 +37,7 @@ function generateNodeId(kind: string): string {
 export function PageEditor({ page }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [nodes, setNodes] = useState<EvoluaNode[]>(page.nodes);
+  const [nodes, setNodes] = useState<unknown[]>(page.nodes as EvoluaNode[]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -61,12 +61,13 @@ export function PageEditor({ page }: Props) {
 
     if (!text) return;
 
-    const newNode: EvoluaNode = {
+    const newNode = {
       id: generateNodeId(kind),
       kind,
+      name: text,
       text,
       ...(href ? { href } : {}),
-    };
+    } as unknown as EvoluaNode;
 
     startTransition(async () => {
       setNodes((prev) => [...prev, newNode]);
@@ -79,7 +80,7 @@ export function PageEditor({ page }: Props) {
 
   function handleUpdate(nodeId: string, updates: Partial<Omit<EvoluaNode, "id">>) {
     startTransition(async () => {
-      setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, ...updates } : n)));
+      setNodes((prev) => prev.map((n: unknown) => ((n as { id: string }).id === nodeId ? { ...(n as object), ...updates } : n)));
       setEditingId(null);
       await updateNodeInPageAction(page.id, nodeId, updates);
     });
@@ -91,7 +92,7 @@ export function PageEditor({ page }: Props) {
     if (!confirm("Remover este node?")) return;
 
     startTransition(async () => {
-      setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+      setNodes((prev) => prev.filter((n: unknown) => (n as { id: string }).id !== nodeId));
       await removeNodeFromPageAction(page.id, nodeId);
     });
   }

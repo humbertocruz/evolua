@@ -14,7 +14,7 @@ function generateApiKey(): string {
   return key;
 }
 import type { PageStatus } from "@prisma/client";
-import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@evolua/types";
+import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/packages/types";
 
 function normalizePath(path: string): string {
   if (!path) return "/";
@@ -199,7 +199,7 @@ export async function unpublishPage(pageId: string, userId: string): Promise<voi
 export async function addNodeToPage(
   pageId: string,
   userId: string,
-  node: { id: string; kind: string; text: string; href?: string }
+  node: unknown
 ): Promise<void> {
   const page = await getPageById(pageId, userId);
   if (!page) throw new Error("Page not found");
@@ -214,7 +214,7 @@ export async function updateNodeInPage(
   pageId: string,
   userId: string,
   nodeId: string,
-  updates: Partial<{ text: string; href?: string; kind?: string }>
+  updates: unknown
 ): Promise<void> {
   const page = await getPageById(pageId, userId);
   if (!page) throw new Error("Page not found");

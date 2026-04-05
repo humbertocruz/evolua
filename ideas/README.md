@@ -1,52 +1,101 @@
-# Evolua Ideas
+# Evolu[a]
 
-Esta pasta reúne ideias estratégicas, direções de produto e explorações conceituais do ecossistema Evolu[a].
+**A plataforma que devs usam pra entregar projetos 3x mais rápido.**
 
-## Objetivo
+Build apps com um cockpit visual, exporte código Next.js real e entregue ao cliente. O cliente edita pelo cockpit — você foca no que tem valor.
 
-Separar do core técnico aquilo que ainda está em definição, especialmente temas como:
-- arquitetura do produto SaaS
-- integração do runtime local com Next.js
-- marketplace
-- edição semântica
-- IA operando o modelo do app
-- connectors/bridges opcionais
-- visão de longo prazo do ecossistema
+---
 
-## Ponto de verdade atual
+## O que é
 
-O documento principal desta pasta é:
+- **Evolu[a] Cloud** — cockpit visual (SaaS) onde você modela apps sem escrever código
+- **Eject** — exporta um projeto Next.js 100% standalone como zip
+- **@evolua/next** — runtime leve que conecta apps no cockpit (opcional)
+- **Marketplace** — templates e componentes compartilháveis (futuro)
 
-- `current-direction.md`
+## Para quem é
 
-Ele funciona como a bússola oficial do momento.
-Os outros arquivos podem conter:
-- ideias complementares
-- explorações futuras
-- recortes parciais
-- hipóteses ainda não consolidadas
+### Devs que entregam projetos
+Modela o app no cockpit → Eject → ZIP → deploy na Vercel do cliente.  
+O cliente edita textos, imagens e estrutura pelo cockpit. Você entrega mais rápido, cobra manutenção recorrente.
 
-## Direção atual resumida
+### Equipes e makers
+Prototipa em horas, ejeta quando precisa de código real, ajusta manualmente se quiser.
 
-Hoje, a visão mais forte do Evolu[a] é:
-- **Evolu[a] como SaaS**
-- **modelo do app vivendo na nuvem**
-- **Next.js do usuário permanecendo livre**
-- **runtime local leve** para resolver rotas e renderizar o que vem do Evolu[a] Cloud
-- **marketplace** como camada natural do produto
-- **bridge local** apenas como recurso opcional/futuro
+---
 
-## Conteúdo atual
+## Arquitetura
 
-- `current-direction.md` → direção oficial atual do produto
-- `local-connector.md` → hipótese de connector/bridge local opcional para acessar recursos privados
-- `agent-protocol-v0.md` → rascunho de como ensinar IAs externas a entender e operar o Evolu[a]
-- `ai-interaction-with-live-app.md` → visão de IA interagindo com o app/modelo vivo
-- `semantic-model-editor.md` → direção de edição manual/estruturada sem depender só de IA
-- `action-catalog-v0.md` → ideias sobre catálogo de actions semânticas
-- `app-evolution-phases.md` → visão de apps evoluindo por estágios dentro do Evolu[a]
-- `self-evolution.md` → horizonte estratégico mais distante
+```
+Evolua/
+├── apps/
+│   └── web/                 # SaaS — cockpit, editor, home pública
+├── packages/
+│   ├── types/               # Contrato compartilhado
+│   ├── db/                  # Prisma schema + cliente singleton
+│   ├── ui/                  # Componentes React
+│   ├── runtime/             # Motor de renderização de nodes → React
+│   ├── core/                # Lógica central (experimentos)
+│   └── next/                # Runtime leve pra app do usuário
+├── templates/
+│   └── default/             # Template oficial — base do Eject
+├── scripts/
+│   └── publish.sh           # Publish de todos os packages no npm
+└── ideas/
+    └── current-direction.md # Direção de produto
+```
 
-## Regra prática
+## Packages (@evolua/*)
 
-Se um arquivo desta pasta conflitar com `current-direction.md`, considere `current-direction.md` como fonte oficial.
+| Package | Descrição |
+|---------|-----------|
+| `@evolua/types` | Tipos compartilhados (PageNode, VisualConfig, etc.) |
+| `@evolua/db` | Prisma schema + `createPrismaClient()` + seed |
+| `@evolua/ui` | Componentes React (Button, Card, Input) |
+| `@evolua/runtime` | `renderPage(page)` — renderiza nodes como React |
+| `@evolua/next` | Runtime leve pro app do usuário |
+
+## Fluxo: Eject
+
+1. Modele páginas no cockpit (`/evolua/pages`)
+2. Clique em **Exportar → Eject**
+3. Baixa um ZIP com projeto Next.js completo
+4. Deploya na Vercel — app 100% standalone, sem dependência do Evolu[a] pra rodar
+
+```
+Cliente recebe → código Next.js normal
+               → banco PostgreSQL próprio
+               → domínio próprio
+               → pode continuar editando pelo cockpit do Evolu[a] (opcional)
+```
+
+## Dev
+
+```bash
+# Rodar o SaaS localmente
+npm run dev:web
+
+# Build do SaaS
+npm run build:web
+
+# Publicar packages no npm (requer NPM_TOKEN)
+export NPM_TOKEN=your_token_here
+npm run publish
+```
+
+## Publish no npm
+
+1. Crie um token em [npmjs.com/settings/tokens](https://www.npmjs.org/settings/tokens) — nível **Automation**
+2. `export NPM_TOKEN=xxxx`
+3. `npm run publish`
+
+## Status
+
+- [x] Auth, Projects, Pages — funcionando no SaaS
+- [x] Eject — exportação de ZIP com projeto Next.js real
+- [x] `@evolua/db`, `@evolua/ui`, `@evolua/runtime` — publicados
+- [x] Cockpit de edição de páginas (nodes)
+- [ ] Editor visual de páginas (arrastar, redimensionar)
+- [ ] Marketplace de templates e componentes
+- [ ] Deploy automático via API Vercel
+- [ ] Publish dos packages no npm

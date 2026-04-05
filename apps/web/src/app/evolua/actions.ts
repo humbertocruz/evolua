@@ -103,7 +103,7 @@ export async function unpublishPageAction(pageId: string) {
 
 // ─── Nodes ─────────────────────────────────────────────────
 
-export async function addNodeToPageAction(pageId: string, node: { id: string; kind: string; text: string; href?: string }) {
+export async function addNodeToPageAction(pageId: string, node: unknown) {
   const userId = await getUserId();
   await addNodeToPage(pageId, userId, node);
 
@@ -115,7 +115,7 @@ export async function addNodeToPageAction(pageId: string, node: { id: string; ki
 export async function updateNodeInPageAction(
   pageId: string,
   nodeId: string,
-  updates: Partial<{ text: string; href?: string; kind?: string }>
+  updates: unknown
 ) {
   const userId = await getUserId();
   await updateNodeInPage(pageId, userId, nodeId, updates);

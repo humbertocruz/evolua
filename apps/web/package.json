@@ -2,24 +2,16 @@
   "name": "appware",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "bun@1.3.11",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
-    "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio",
-    "prisma:seed": "prisma db seed"
-  },
-  "prisma": {
-    "seed": "bun prisma/seed.ts"
+    "prisma:push": "prisma db push"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
-    "@evolua/types": "file:src/@evolua/types",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "archiver": "^7.0.1",

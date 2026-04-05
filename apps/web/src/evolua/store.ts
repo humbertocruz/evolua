@@ -4,7 +4,7 @@ import seedModel from "@/evolua/app.model.json";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateDemoUser } from "./demo-user";
 
-import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@evolua/types";
+import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/packages/types";
 
 const DEFAULT_PROJECT_SLUG = process.env.EVOLUA_PUBLIC_PROJECT_SLUG ?? "evolua-saas";
 const DEFAULT_PROJECT_NAME = "Evolu[a] Next Host";

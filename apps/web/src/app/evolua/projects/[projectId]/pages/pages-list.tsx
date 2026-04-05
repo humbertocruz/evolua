@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import Link from "next/link";
-import type { EvoluaPage } from "@evolua/types";
+import type { EvoluaPage } from "@/packages/types";
 import {
   deletePageAction,
   publishPageAction,

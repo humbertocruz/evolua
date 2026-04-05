@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditor } from "./editor-context";
-import { nodeKindList, type NodeKindLiteral } from "@evolua/types";
+import { nodeKindList, type NodeKindLiteral } from "@/packages/types";
 
 export function Palette() {
   const { addNode } = useEditor();
