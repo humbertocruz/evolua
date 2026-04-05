@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
-    "@evolua/types": "file:../../packages/types",
+    "@evolua/types": "file:src/@evolua/types",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "archiver": "^7.0.1",

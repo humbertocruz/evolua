@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { EvoluaPage } from "@/evolua/types";
+import type { EvoluaPage } from "@evolua/types";
 import {
   createPageAction,
   deletePageAction,

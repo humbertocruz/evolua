@@ -14,7 +14,7 @@ function generateApiKey(): string {
   return key;
 }
 import type { PageStatus } from "@prisma/client";
-import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@/evolua/types";
+import type { EvoluaAppModel, EvoluaPage, EvoluaPageStatus } from "@evolua/types";
 
 function normalizePath(path: string): string {
   if (!path) return "/";

@@ -10,7 +10,7 @@ import {
   publishPageAction,
   unpublishPageAction,
 } from "@/app/evolua/actions";
-import type { EvoluaNode } from "@/evolua/types";
+import type { EvoluaNode } from "@evolua/types";
 
 type Props = {
   page: {
