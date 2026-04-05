@@ -1,6 +1,7 @@
 // Multi-tenant store — all operations scoped to a user's project
 // Usage: await userScopedStore(session.user.id)
 
+import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -23,6 +24,7 @@ function normalizePath(path: string): string {
 
 function mapPageFromDb(page: {
   id: string;
+  projectId: string;
   path: string;
   title: string;
   status: PageStatus;
@@ -31,6 +33,7 @@ function mapPageFromDb(page: {
 }): EvoluaPage {
   return {
     id: page.id,
+    projectId: page.projectId,
     path: page.path,
     title: page.title,
     status: page.status,
@@ -235,6 +238,26 @@ export async function removeNodeFromPage(
   await prisma.page.update({
     where: { id: pageId },
     data: { nodes: page.nodes.filter((n) => n.id !== nodeId) },
+  });
+}
+
+export async function savePageNodes(
+  pageId: string,
+  userId: string,
+  nodes: Array<{
+    id: string;
+    kind: string;
+    text: string;
+    href?: string;
+    parentId?: string | null;
+  }>
+): Promise<void> {
+  const page = await getPageById(pageId, userId);
+  if (!page) throw new Error("Page not found");
+
+  await prisma.page.update({
+    where: { id: pageId },
+    data: { nodes: nodes as unknown as Prisma.JsonArray },
   });
 }
 

@@ -1,97 +1,86 @@
-import Link from "next/link";
-import type { CSSProperties } from "react";
-import type { NodeKindLiteral } from "@evolua/types";
+"use client";
 
-type Node = {
-  id: string;
-  kind: NodeKindLiteral;
-  text?: string;
-  href?: string;
-  src?: string;
-  alt?: string;
-  level?: string;
-  align?: string;
-  color?: string;
-  tone?: string;
-  ordered?: boolean;
-  rounded?: string;
-  shadow?: boolean;
-  variant?: string;
-  fullWidth?: boolean;
-  underline?: boolean;
-  target?: string;
-  size?: string;
-  weight?: string;
-  spacing?: string;
-  maxWidth?: string;
-  padding?: string;
-  tag?: string;
-  bg?: string;
-  gap?: string;
-  count?: string;
-  collapseOn?: string;
-  direction?: string;
-  orientation?: string;
-  thickness?: string;
-  objectFit?: string;
-  title?: string;
-  description?: string;
-  [key: string]: unknown;
-  children?: Node[];
-};
+import { useEditor } from "./editor-context";
+import type { EditorNode } from "./editor-context";
 
-function getNodeStyle(visual: Record<string, unknown> | undefined, nodeId: string): CSSProperties {
-  const nodeVisual = visual?.[nodeId] as Record<string, unknown> | undefined;
-  return {
-    color: (nodeVisual?.color as string) ?? undefined,
-    opacity: nodeVisual?.tone === "muted" ? 0.7 : undefined,
-  };
-}
+export function CanvasPreview() {
+  const { nodes } = useEditor();
 
-function classForAlign(align?: string): string {
-  switch (align) {
-    case "center": return "text-center";
-    case "right": return "text-right";
-    default: return "text-left";
+  if (nodes.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 p-12 text-center">
+        <p className="text-4xl">📭</p>
+        <p className="mt-3 font-medium text-zinc-600">Canvas vazio</p>
+        <p className="mt-1 text-sm text-zinc-400">
+          Adicione elementos pela paleta ao lado
+        </p>
+      </div>
+    );
   }
+
+  return (
+    <div className="min-h-[500px] rounded-2xl border border-zinc-200 bg-white p-8">
+      <div className="mx-auto max-w-3xl space-y-6">
+        {nodes.map((node) => (
+          <RenderNode key={node.id} node={node} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
-function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNode {
-  const p = node;
-  const style = getNodeStyle(visual, node.id);
+// Recursive renderer
+function RenderNode({ node }: { node: EditorNode }) {
+  const p = node.props;
 
+  // Render children recursively
   function renderChildren() {
     if (!node.children || node.children.length === 0) return null;
-    return <>{node.children.map((child) => renderRec(child, visual))}</>;
+    return (
+      <div className={childContainerClass(node.kind)}>
+        {node.children.map((child) => (
+          <RenderNode key={child.id} node={child} />
+        ))}
+      </div>
+    );
+  }
+
+  function childContainerClass(kind: string): string {
+    switch (kind) {
+      case "columns": return "contents";
+      case "container": return "";
+      case "card": return "";
+      case "list": return "";
+      default: return "mt-2";
+    }
   }
 
   switch (node.kind) {
     case "heading": {
-      const level = String(p.level ?? "h1");
+      const level = String(p.level ?? "h1") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
       const text = String(p.text ?? "");
-      const align = String(p.align ?? "left");
-      if (level === "h1") return <h1 style={style} className={`text-4xl font-bold tracking-tight ${classForAlign(align)}`}>{text}{renderChildren()}</h1>;
-      if (level === "h2") return <h2 style={style} className={`text-3xl font-bold ${classForAlign(align)}`}>{text}{renderChildren()}</h2>;
-      if (level === "h3") return <h3 style={style} className={`text-2xl font-bold ${classForAlign(align)}`}>{text}{renderChildren()}</h3>;
-      if (level === "h4") return <h4 style={style} className={`text-xl font-bold ${classForAlign(align)}`}>{text}{renderChildren()}</h4>;
-      if (level === "h5") return <h5 style={style} className={`text-lg font-bold ${classForAlign(align)}`}>{text}{renderChildren()}</h5>;
-      return <h6 style={style} className={`text-base font-bold ${classForAlign(align)}`}>{text}{renderChildren()}</h6>;
+      const align = String(p.align ?? "left") as "left" | "center" | "right";
+      const color = p.color as string | undefined;
+      const style = { textAlign: align, color };
+      if (level === "h1") return <h1 style={style}>{text}{renderChildren()}</h1>;
+      if (level === "h2") return <h2 style={style}>{text}{renderChildren()}</h2>;
+      if (level === "h3") return <h3 style={style}>{text}{renderChildren()}</h3>;
+      if (level === "h4") return <h4 style={style}>{text}{renderChildren()}</h4>;
+      if (level === "h5") return <h5 style={style}>{text}{renderChildren()}</h5>;
+      return <h6 style={style}>{text}{renderChildren()}</h6>;
     }
 
     case "paragraph": {
       const text = String(p.text ?? "");
-      const align = String(p.align ?? "left");
-      return (
-        <p style={style} className={`max-w-2xl text-base leading-7 text-zinc-600 ${classForAlign(align)}`}>
-          {text}{renderChildren()}
-        </p>
-      );
+      const align = String(p.align ?? "left") as "left" | "center" | "right";
+      return <p style={{ textAlign: align }} className="text-base leading-relaxed text-zinc-700">{text}{renderChildren()}</p>;
     }
 
     case "text": {
       const text = String(p.text ?? "");
       const size = String(p.size ?? "base");
       const weight = String(p.weight ?? "normal");
+      const color = p.color as string | undefined;
       const sizeClass: Record<string, string> = {
         xs: "text-xs", sm: "text-sm", base: "text-base", lg: "text-lg", xl: "text-xl", "2xl": "text-2xl",
       };
@@ -99,7 +88,10 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
         light: "font-light", normal: "font-normal", medium: "font-medium", bold: "font-bold",
       };
       return (
-        <span style={style} className={`${sizeClass[size] ?? "text-base"} ${weightClass[weight] ?? ""}`}>
+        <span
+          className={`${sizeClass[size] ?? "text-base"} ${weightClass[weight] ?? ""}`}
+          style={{ color }}
+        >
           {text}
         </span>
       );
@@ -109,16 +101,16 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
       const text = String(p.text ?? "");
       const href = String(p.href ?? "#");
       const underline = p.underline !== false;
-      const color = p.color ?? style.color;
+      const color = p.color as string | undefined;
       return (
-        <Link
+        <a
           href={href}
           target={String(p.target ?? "_self")}
-          className={`text-base font-medium underline underline-offset-4 transition-opacity hover:opacity-80 ${underline ? "" : "no-underline"}`}
-          style={{ color: color as string | undefined }}
+          className={`text-blue-600 hover:underline ${underline ? "" : "no-underline"}`}
+          style={{ color }}
         >
           {text}
-        </Link>
+        </a>
       );
     }
 
@@ -148,10 +140,7 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
         link: "text-blue-600 hover:underline",
       };
       return (
-        <button
-          type="button"
-          className={`inline-block rounded-xl px-4 py-2 text-sm font-medium transition ${variantClass[variant] ?? ""} ${fullWidth ? "w-full" : ""}`}
-        >
+        <button className={`rounded-xl px-4 py-2 text-sm font-medium transition ${variantClass[variant] ?? ""} ${fullWidth ? "w-full" : ""}`}>
           {text}
         </button>
       );
@@ -160,9 +149,9 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
     case "divider": {
       const orientation = String(p.orientation ?? "horizontal");
       return orientation === "horizontal" ? (
-        <hr className="my-4 border-zinc-300" />
+        <hr className="border-zinc-300" />
       ) : (
-        <div className="my-2 h-8 w-px bg-zinc-300" />
+        <div className="h-8 w-px bg-zinc-300" />
       );
     }
 
@@ -192,14 +181,11 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
         none: "p-0", sm: "p-2", md: "p-4", lg: "p-6", xl: "p-8",
       };
       return (
-        // @ts-ignore — dynamic tag
         <div
-          className={`${maxWidthClass[maxWidth] ?? "max-w-lg"} ${paddingClass[padding] ?? "p-4"}`}
+          className={`${maxWidthClass[maxWidth] ?? ""} ${paddingClass[padding] ?? "p-4"}`}
           style={{ backgroundColor: bg }}
         >
-          {node.children && node.children.length > 0
-            ? node.children.map((c) => renderRec(c, visual))
-            : null}
+          {node.children.length > 0 ? renderChildren() : <span className="text-zinc-400">container</span>}
         </div>
       );
     }
@@ -214,9 +200,7 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
         <div className={`grid grid-cols-${count} ${gapClass[gap] ?? "gap-4"}`}>
           {Array.from({ length: count }).map((_, i) => (
             <div key={i} className="rounded border border-zinc-200 bg-zinc-50 p-4 text-center text-sm text-zinc-400">
-              {node.children && node.children[i]
-                ? renderRec(node.children[i], visual)
-                : `Coluna ${i + 1}`}
+              {node.children[i] ? <RenderNode node={node.children[i]} /> : `Coluna ${i + 1}`}
             </div>
           ))}
         </div>
@@ -232,8 +216,8 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
       const Tag = ordered ? "ol" : "ul";
       return (
         <Tag className={`${spacingClass[spacing] ?? "space-y-2"} pl-5`}>
-          {node.children && node.children.length > 0
-            ? node.children.map((c) => <li key={c.id}>{renderRec(c, visual)}</li>)
+          {node.children.length > 0
+            ? node.children.map((c) => <li key={c.id}><RenderNode node={c} /></li>)
             : <><li>Item 1</li><li>Item 2</li><li>Item 3</li></>
           }
         </Tag>
@@ -261,39 +245,19 @@ function renderRec(node: Node, visual?: Record<string, unknown>): React.ReactNod
           className={`overflow-hidden ${roundedClass[rounded] ?? ""} ${shadow ? "shadow-md" : "border border-zinc-200"} ${paddingClass[padding] ?? "p-4"}`}
           style={{ backgroundColor: bg }}
         >
-          {node.children && node.children.length > 0
-            ? node.children.map((c) => renderRec(c, visual))
-            : null}
+          {node.children.length > 0
+            ? node.children.map((c) => <RenderNode key={c.id} node={c} />)
+            : <span className="text-zinc-400">Card vazio</span>
+          }
         </div>
       );
     }
 
     default:
-      return null;
+      return (
+        <div className="rounded bg-zinc-100 px-3 py-2 text-sm text-zinc-500">
+          [{node.kind}]
+        </div>
+      );
   }
-}
-
-export function normalizePathFromSlug(slug?: string[]) {
-  if (!slug || slug.length === 0) return "/";
-  return `/${slug.join("/")}`;
-}
-
-export function renderPage(
-  page: { nodes: unknown; visual?: unknown },
-  options: { className?: string } = {}
-) {
-  // Support both flat array (legacy) and nested tree (new editor)
-  const rawNodes = page.nodes as Node[] | undefined;
-  const visual = page.visual as Record<string, unknown> | undefined;
-
-  return (
-    <main className={`flex min-h-screen items-center justify-center bg-zinc-50 px-6 py-16 text-zinc-950 ${options.className ?? ""}`}>
-      <section className="flex w-full max-w-3xl flex-col gap-6 rounded-3xl border border-zinc-200 bg-white p-10 shadow-sm">
-        {rawNodes && rawNodes.length > 0
-          ? rawNodes.map((node) => renderRec(node, visual))
-          : <p className="text-zinc-400">Esta página está vazia.</p>
-        }
-      </section>
-    </main>
-  );
 }

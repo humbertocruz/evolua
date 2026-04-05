@@ -9,6 +9,7 @@ export type EvoluaPageStatus = "draft" | "published";
 
 export type EvoluaPage = {
   id: string;
+  projectId: string;
   path: string;
   title: string;
   status: EvoluaPageStatus;

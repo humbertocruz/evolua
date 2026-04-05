@@ -6,6 +6,7 @@ import {
   getUserProjects,
   createProject as storeCreateProject,
   getPageById,
+  getProjectById,
   updatePage,
   deletePage,
   publishPage,
@@ -131,6 +132,19 @@ export async function removeNodeFromPageAction(pageId: string, nodeId: string) {
   revalidatePath("/evolua");
   revalidatePath("/evolua/pages");
   revalidatePath(`/evolua/pages/${encodeURIComponent(pageId)}`);
+}
+
+// ─── Export / Eject ────────────────────────────────────────
+
+export async function ejectProjectAction(projectId: string, projectName: string) {
+  const userId = await getUserId();
+  const project = await getProjectById(projectId, userId);
+  if (!project) return { error: "Projeto não encontrado." };
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://evolua.cloud";
+  return {
+    downloadUrl: `${baseUrl}/api/export/project?projectId=${projectId}&name=${encodeURIComponent(projectName)}`,
+  };
 }
 
 // ─── Getters (for server components) ──────────────────────

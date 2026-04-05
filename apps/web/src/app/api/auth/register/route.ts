@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureDefaultProject } from "@/evolua/store";
 import seedModel from "@/evolua/app.model.json";
 
-function asInputJson(value: unknown) {
-  return value as import("@prisma/client/runtime/library").InputJsonValue;
+function asInputJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
 }
 
 export async function POST(req: Request) {

@@ -2,11 +2,15 @@
   "name": "@evolua/next",
   "version": "0.1.0",
   "description": "Runtime leve para Next.js conectar no Evolua SaaS",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
+    "build": "../../node_modules/.bin/esbuild src/index.ts --bundle --platform=node --packages=external --outdir=dist --format=esm --tsconfig=../../tsconfig.json --loader:.tsx=ts --loader:.ts=js --external:react --external:react-dom --external:next",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@evolua/types": "workspace:*"
   },
   "peerDependencies": {
     "next": "^14",

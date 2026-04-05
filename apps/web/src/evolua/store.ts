@@ -43,6 +43,7 @@ function asNullableInputJson(value: unknown): Prisma.InputJsonValue | Prisma.Nul
 
 function mapPageFromDb(page: {
   id: string;
+  projectId: string;
   path: string;
   title: string;
   status: PageStatus;
@@ -51,6 +52,7 @@ function mapPageFromDb(page: {
 }): EvoluaPage {
   return {
     id: page.id,
+    projectId: page.projectId,
     path: page.path,
     title: page.title,
     status: page.status,
@@ -150,18 +152,16 @@ export async function getPageById(pageId: string): Promise<EvoluaPage | null> {
 export async function getPageByPath(path: string, projectId?: string): Promise<EvoluaPage | null> {
   await ensureDefaultProject();
 
-  const where: Parameters<typeof prisma.page.findFirst>[0]["where"] = {
+  const baseWhere = {
     path: normalizePath(path),
-    status: "published",
+    status: "published" as const,
   };
 
-  if (projectId) {
-    where.projectId = projectId;
-  } else {
-    where.project = { slug: DEFAULT_PROJECT_SLUG };
-  }
-
-  const page = await prisma.page.findFirst({ where });
+  const page = await prisma.page.findFirst({
+    where: projectId
+      ? { ...baseWhere, projectId }
+      : { ...baseWhere, project: { slug: DEFAULT_PROJECT_SLUG } },
+  });
 
   return page ? mapPageFromDb(page) : null;
 }

@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const projects = await getUserProjects(session.user.id);
+  const projects = await getUserProjects(session.user.id!);
   const project = projects[0];
 
   if (!project) {
@@ -24,9 +24,9 @@ export async function GET() {
       dev: "next dev",
       build: "prisma generate && next build",
       start: "next start",
-      db:generate: "prisma generate",
-      db:push: "prisma db push",
-      db:seed: "tsx prisma/seed.ts",
+      "db:generate": "prisma generate",
+      "db:push": "prisma db push",
+      "db:seed": "tsx prisma/seed.ts",
     },
     dependencies: {
       "@evolua/db": "^0.1.0",

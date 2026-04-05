@@ -8,7 +8,7 @@ export default async function EvoluaHomePage() {
   const session = await auth();
   if (!session?.user) redirect("/auth/login");
 
-  const projects = await getUserProjects(session.user.id);
+  const projects = await getUserProjects(session.user.id!);
 
   return (
     <section className="flex flex-col gap-6">
@@ -80,7 +80,7 @@ export default async function EvoluaHomePage() {
   );
 }
 
-async function ProjectCard({ project }: { project: { id: string; name: string; slug: string; description?: string; pageCount: number; apiKey: string } }) {
+async function ProjectCard({ project }: { project: { id: string; name: string; slug: string; description?: string | null; pageCount: number; apiKey: string } }) {
   return (
     <Link
       href={`/evolua/projects/${project.id}/pages`}

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 
-import { getPageById } from "@/evolua/store";
+import { getPageById, getProjectById } from "@/evolua/user-store";
 import type { EvoluaNode } from "@/evolua/types";
 import { PageEditor } from "./page-editor";
+import { DeployPanel } from "./deploy-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +14,19 @@ export default async function EvoluaPageDetails({
 }: {
   params: Promise<{ pageId: string }>;
 }) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    notFound();
+  }
+
   const { pageId } = await params;
-  const page = await getPageById(decodeURIComponent(pageId));
+  const page = await getPageById(decodeURIComponent(pageId), session.user.id);
 
   if (!page) {
     notFound();
   }
+
+  const project = await getProjectById(page.projectId, session.user.id);
 
   return (
     <section className="flex flex-col gap-8">
@@ -51,6 +60,8 @@ export default async function EvoluaPageDetails({
       </div>
 
       <PageEditor page={page} />
+
+      {project && <DeployPanel page={page} project={project} />}
     </section>
   );
 }

@@ -14,7 +14,7 @@ export default async function ProjectPagesPage({
   if (!session?.user) redirect("/auth/login");
 
   const { projectId } = await params;
-  const projects = await getUserProjects(session.user.id);
+  const projects = await getUserProjects(session.user.id!);
   const project = projects.find((p) => p.id === projectId);
 
   if (!project) redirect("/evolua");

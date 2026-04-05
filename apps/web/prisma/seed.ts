@@ -1,5 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../src/lib/prisma";
 import seedModel from "../src/evolua/app.model.json";
 
@@ -51,8 +52,8 @@ async function main() {
         path: page.path,
         title: page.title,
         status: "published",
-        nodes: page.nodes as unknown[],
-        visual: (page.visual as unknown[]) ?? [],
+        nodes: page.nodes as Prisma.InputJsonValue,
+        visual: (page.visual as Prisma.InputJsonValue) ?? Prisma.JsonNull,
       },
     });
     seeded++;

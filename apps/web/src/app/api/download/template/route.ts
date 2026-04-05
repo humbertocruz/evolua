@@ -13,7 +13,7 @@ export async function GET() {
   let apiKeyHint = "YOUR_API_KEY";
 
   if (session?.user) {
-    const projects = await getUserProjects(session.user.id);
+    const projects = await getUserProjects(session.user.id!);
     if (projects[0]) {
       projectSlug = projects[0].slug;
       // Partial key for display

@@ -7,6 +7,7 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
+  transpilePackages: ["@evolua/types"],
   turbopack: {
     root: path.resolve(__dirname, "../.."),
   },

@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  addNodeToPage,
-  updateNodeInPage,
-  removeNodeFromPage,
+  addNodeToPageAction,
+  updateNodeInPageAction,
+  removeNodeFromPageAction,
   publishPageAction,
   unpublishPageAction,
 } from "@/app/evolua/actions";
@@ -71,7 +71,7 @@ export function PageEditor({ page }: Props) {
     startTransition(async () => {
       setNodes((prev) => [...prev, newNode]);
       setShowAddForm(false);
-      await addNodeToPage(page.id, newNode);
+      await addNodeToPageAction(page.id, newNode);
     });
   }
 
@@ -81,7 +81,7 @@ export function PageEditor({ page }: Props) {
     startTransition(async () => {
       setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, ...updates } : n)));
       setEditingId(null);
-      await updateNodeInPage(page.id, nodeId, updates);
+      await updateNodeInPageAction(page.id, nodeId, updates);
     });
   }
 
@@ -92,7 +92,7 @@ export function PageEditor({ page }: Props) {
 
     startTransition(async () => {
       setNodes((prev) => prev.filter((n) => n.id !== nodeId));
-      await removeNodeFromPage(page.id, nodeId);
+      await removeNodeFromPageAction(page.id, nodeId);
     });
   }
 

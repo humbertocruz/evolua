@@ -2,6 +2,5 @@
   "installCommand": "cd apps/web && ~/.bun/bin/bun install",
   "buildCommand": "~/.bun/bin/bun run build",
   "framework": "nextjs",
-  "rootDirectory": "apps/web",
   "regions": ["iad1"]
 }

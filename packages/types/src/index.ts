@@ -2,6 +2,8 @@
 // @evolua/types — Contrato entre SaaS e Runtime Next.js
 // ============================================================
 
+export * from "./nodes";
+
 // ─── Entidades do Modelo ────────────────────────────────────
 
 export type NodeKind =
@@ -45,6 +47,7 @@ export interface ViewNode extends BaseNode {
   kind: "page" | "layout" | "section" | "component" | "slot" | "text";
   componentType?: string;
   props?: Record<string, ValueExpression>;
+  custom?: Record<string, unknown>; // props livres — não precisam ser previtos no schema
   children?: string[];
   styleTokens?: string[];
   dataRefs?: NodeRef[];

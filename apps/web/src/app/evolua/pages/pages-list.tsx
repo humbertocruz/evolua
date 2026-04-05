@@ -62,7 +62,11 @@ function CreatePageButton() {
     if (!title || !path) return;
 
     startTransition(async () => {
-      const page = await createPage(formData);
+      const page = await createPageAction(
+        "default-project-id",
+        String(formData.get("title") ?? "").trim(),
+        String(formData.get("path") ?? "").trim()
+      );
       setIsOpen(false);
       router.push(`/evolua/pages/${encodeURIComponent(page.id)}`);
     });
@@ -193,9 +197,15 @@ function PageRow({ page }: { page: EvoluaPage }) {
           </button>
           <Link
             href={`/evolua/pages/${encodeURIComponent(page.id)}`}
+            className="rounded-full border border-violet-200 px-4 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-50"
+          >
+            📝 Editar
+          </Link>
+          <Link
+            href={`/evolua/pages/${encodeURIComponent(page.id)}/visual`}
             className="rounded-full bg-zinc-950 px-4 py-2 text-sm font-medium !text-white transition hover:bg-zinc-800"
           >
-            Editar
+            🎨 Visual
           </Link>
           <button
             onClick={handleDelete}

@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getUserProjects, getPageById } from "@/evolua/user-store";
-import { PageEditor } from "../../pages/[pageId]/page-editor";
+import { PageEditor } from "@/app/evolua/pages/[pageId]/page-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +15,12 @@ export default async function ProjectPageEditor({
   if (!session?.user) redirect("/auth/login");
 
   const { projectId, pageId } = await params;
-  const projects = await getUserProjects(session.user.id);
+  const projects = await getUserProjects(session.user.id!);
   const project = projects.find((p) => p.id === projectId);
 
   if (!project) redirect("/evolua");
 
-  const page = await getPageById(pageId, session.user.id);
+  const page = await getPageById(pageId, session.user.id!);
 
   if (!page) redirect(`/evolua/projects/${projectId}/pages`);
 

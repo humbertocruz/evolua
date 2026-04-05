@@ -20,6 +20,12 @@
     "publish": "bash scripts/publish.sh"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^12.3.0",
+    "esbuild": "^0.27.4",
+    "rollup": "^4.60.0",
     "turbo": "^2.5.6"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
   }
 }
