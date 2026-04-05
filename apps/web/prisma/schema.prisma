@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Multi-tenant: User → Project → Page ─────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique  // globally unique for the SaaS demo
+  name        String
+  description String?
+  apiKey      String   @unique
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pages       Page[]
+
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@map("projects")
+}
+
+model Page {
+  id        String     @id @default(cuid())
+  projectId String
+  path      String
+  title     String
+  status    PageStatus @default(draft)
+  nodes     Json
+  visual    Json?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@unique([projectId, path])
+  @@map("pages")
+}
+
+enum PageStatus {
+  draft
+  published
+}

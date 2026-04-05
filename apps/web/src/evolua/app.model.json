@@ -1,0 +1,110 @@
+{
+  "app": {
+    "id": "app:evolua-next",
+    "name": "evolua-next",
+    "title": "Evolu[a] Next Host"
+  },
+  "pages": [
+    {
+      "id": "page:home",
+      "path": "/",
+      "title": "Evolu[a]",
+      "nodes": [
+        {
+          "id": "hero-kicker",
+          "kind": "text",
+          "text": "Evolu[a] + Next.js"
+        },
+        {
+          "id": "hero-title",
+          "kind": "heading",
+          "text": "O host roda no Next. O app nasce do modelo."
+        },
+        {
+          "id": "hero-copy",
+          "kind": "paragraph",
+          "text": "Esta tela é resolvida por uma rota dinâmica do Next e renderizada a partir do modelo JSON do Evolu[a]."
+        },
+        {
+          "id": "link-login",
+          "kind": "link",
+          "text": "Abrir login demo",
+          "href": "/login"
+        },
+        {
+          "id": "link-forgot-password",
+          "kind": "link",
+          "text": "Ir para forgot password",
+          "href": "/forgot-password"
+        }
+      ],
+      "visual": {
+        "hero-kicker": {
+          "tone": "muted"
+        },
+        "hero-title": {
+          "color": "#111827"
+        },
+        "link-forgot-password": {
+          "color": "#dc2626"
+        }
+      }
+    },
+    {
+      "id": "page:login",
+      "path": "/login",
+      "title": "Login",
+      "nodes": [
+        {
+          "id": "login-kicker",
+          "kind": "text",
+          "text": "Auth demo"
+        },
+        {
+          "id": "login-title",
+          "kind": "heading",
+          "text": "Entrar"
+        },
+        {
+          "id": "login-copy",
+          "kind": "paragraph",
+          "text": "Aqui a tela ainda é simples de propósito: queremos provar o loop modelo → UI antes de filosofar demais."
+        },
+        {
+          "id": "login-forgot-link",
+          "kind": "link",
+          "text": "Uai, qual minha senha?",
+          "href": "/forgot-password"
+        }
+      ],
+      "visual": {
+        "login-forgot-link": {
+          "color": "#dc2626"
+        }
+      }
+    },
+    {
+      "id": "page:forgot-password",
+      "path": "/forgot-password",
+      "title": "Forgot password",
+      "nodes": [
+        {
+          "id": "forgot-title",
+          "kind": "heading",
+          "text": "Recuperar senha"
+        },
+        {
+          "id": "forgot-copy",
+          "kind": "paragraph",
+          "text": "Esta página também vem do modelo. Nada de arquivo page.tsx específico por tela."
+        },
+        {
+          "id": "forgot-back-link",
+          "kind": "link",
+          "text": "Voltar para login",
+          "href": "/login"
+        }
+      ]
+    }
+  ]
+}

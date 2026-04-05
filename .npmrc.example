@@ -1,0 +1,5 @@
+# Create this file as ~/.npmrc in your home directory
+# Or set the env var directly: export NPM_TOKEN=your_token_here
+
+@evolua:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}

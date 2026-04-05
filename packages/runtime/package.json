@@ -1,0 +1,17 @@
+{
+  "name": "@evolua/runtime",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "peerDependencies": {
+    "react": "^18.x",
+    "react-dom": "^18.x"
+  },
+  "dependencies": {
+    "@evolua/types": "workspace:*",
+    "@evolua/ui": "workspace:*"
+  }
+}
