@@ -1,5 +1,5 @@
 {
-  "installCommand": "curl -fsSL https://bun.sh/install | bash && ~/.bun/bin/bun install",
+  "installCommand": "cd apps/web && ~/.bun/bin/bun install",
   "buildCommand": "~/.bun/bin/bun run build",
   "framework": "nextjs",
   "rootDirectory": "apps/web",
