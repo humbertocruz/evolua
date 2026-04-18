@@ -1,0 +1,327 @@
+# Envware - Complete LLM Reference
+
+> Secure environment variable manager with end-to-end encryption (E2EE) using SSH keys.
+
+Envware encrypts secrets locally using your SSH identity before syncing. The server **never** sees plaintext data. This document provides complete CLI reference for AI coding assistants.
+
+---
+
+## Installation
+
+```bash
+# Quick install (recommended)
+curl -sSL https://www.envware.dev/install.sh | bash
+
+# Via Go
+go install github.com/envware/envware-go@latest
+
+# Build from source
+git clone https://github.com/envware/envware-go
+cd envware-go
+go build -o envw main.go
+sudo mv envw /usr/local/bin/
+```
+
+---
+
+## Architecture
+
+### Hierarchy
+```
+User (SSH Identity)
+  └── Teams (organizations/workspaces)
+        └── Projects (apps/services)
+              └── Environments (.env, .env.production, etc.)
+                    └── Secrets (KEY=VALUE pairs)
+```
+
+### Security Model
+1. **Project Key**: Each project has a unique AES-256 key generated locally
+2. **Secure Envelopes**: Project Key is RSA-OAEP encrypted for each user's SSH public key
+3. **Zero-Knowledge Server**: Server only stores encrypted envelopes and ciphertext
+4. **Fingerprint Verification**: SHA256 fingerprints verify user identity during access approval
+
+---
+
+## Commands Reference
+
+### Authentication & Identity
+
+#### `envw request <team> <project> <ROLE>`
+Request access to a project or create it if you're the first user (becomes OWNER).
+
+```bash
+# Create a new project (you become OWNER)
+envw request myteam myapp OWNER
+
+# Request developer access to existing project
+envw request myteam myapp DEV
+
+# Request CI access for pipelines
+envw request myteam myapp CI
+```
+
+**Roles:**
+- `OWNER` - Full control: push, pull, approve, billing, delete
+- `ADMIN` - Management: push, pull, approve access requests
+- `DEV` - Development: pull only
+- `CI` - Pipelines: show individual secrets only
+
+---
+
+### Syncing Secrets
+
+#### `envw push <team> <project> [env-file]`
+Encrypt and upload secrets from a local .env file.
+
+```bash
+# Push default .env
+envw push myteam myapp
+
+# Push specific environment file
+envw push myteam myapp .env.production
+envw push myteam myapp .env.staging
+```
+
+**What happens:**
+1. Reads local env file
+2. Encrypts each secret with Project Key (AES-256-GCM)
+3. Uploads ciphertext to server
+4. Server never sees plaintext values
+
+---
+
+#### `envw pull <team> <project> [env-file]`
+Download and decrypt secrets to a local .env file.
+
+```bash
+# Pull to default .env
+envw pull myteam myapp
+
+# Pull specific environment
+envw pull myteam myapp .env.production
+```
+
+**What happens:**
+1. Downloads encrypted secrets from server
+2. Decrypts Project Key using your SSH private key
+3. Decrypts each secret with Project Key
+4. Writes plaintext to local file
+
+---
+
+### Viewing Information
+
+#### `envw status <team> [project]`
+Show team or project details.
+
+```bash
+# Show all projects in team
+envw status myteam
+
+# Show project details (users, environments)
+envw status myteam myapp
+```
+
+---
+
+#### `envw projects <team>`
+List all projects you have access to in a team.
+
+```bash
+envw projects myteam
+```
+
+Output: Project name, slug, secrets count
+
+---
+
+#### `envw envs <team> <project>`
+List all environments in a project.
+
+```bash
+envw envs myteam myapp
+```
+
+Output: Environment names (.env, .env.production, etc.) with secret count
+
+---
+
+#### `envw secrets <team> <project> [env-file]`
+List secret keys (names only, not values) in an environment.
+
+```bash
+# List keys in default .env
+envw secrets myteam myapp
+
+# List keys in specific environment
+envw secrets myteam myapp .env.production
+```
+
+Output: List of KEY names (values are not shown)
+
+---
+
+### Access Management
+
+#### `envw accept`
+List all pending access requests for projects you own/admin.
+
+```bash
+envw accept
+```
+
+Output: Request ID, user info, project, role, fingerprint
+
+---
+
+#### `envw accept <request-id>`
+Approve an access request. This:
+1. Decrypts your copy of the Project Key
+2. Re-encrypts it for the requester's public key
+3. Uploads the new envelope
+
+```bash
+envw accept abc123
+
+# Verify fingerprint matches what the user tells you out-of-band!
+```
+
+**Security:** Always verify the fingerprint through a separate channel (Slack, phone, etc.)
+
+---
+
+### Billing & Limits
+
+#### `envw purchase teams`
+Buy an additional team slot ($10/month).
+
+```bash
+envw purchase teams
+```
+
+---
+
+#### `envw purchase projects <team>`
+Buy +5 project slots for a team ($10/month).
+
+```bash
+envw purchase projects myteam
+```
+
+---
+
+#### `envw purchase users <team> <project>`
+Buy +10 user slots for a project ($10/month).
+
+```bash
+envw purchase users myteam myapp
+```
+
+---
+
+### CI/CD Usage
+
+For CI pipelines, use the `CI` role which can only read individual secrets:
+
+```bash
+# In your CI script
+envw request myteam myapp CI
+
+# Get a specific secret value (CI role only)
+envw show myteam myapp .env.production DATABASE_URL
+```
+
+---
+
+## Free Tier Limits
+
+| Resource | Free Limit |
+|----------|------------|
+| Teams | 1 |
+| Projects per Team | 3 |
+| Users per Project | 5 |
+
+**Upgrades:** $10/month each for +1 team, +5 projects, or +10 users.
+
+---
+
+## Common Workflows
+
+### New Project Setup
+```bash
+# 1. Create project (you become OWNER)
+envw request myteam myapp OWNER
+
+# 2. Add your local .env
+envw push myteam myapp
+
+# 3. Teammate requests access
+# (on their machine): envw request myteam myapp DEV
+
+# 4. You approve (verify fingerprint!)
+envw accept <request-id>
+
+# 5. Teammate can now pull
+# (on their machine): envw pull myteam myapp
+```
+
+### Multiple Environments
+```bash
+# Push different environments
+envw push myteam myapp .env.development
+envw push myteam myapp .env.staging
+envw push myteam myapp .env.production
+
+# Pull specific environment
+envw pull myteam myapp .env.production
+```
+
+### Team Onboarding
+```bash
+# New developer runs:
+envw request acme backend DEV
+
+# Team admin runs:
+envw accept
+# Shows pending request with fingerprint
+
+# Verify fingerprint out-of-band, then:
+envw accept <request-id>
+```
+
+---
+
+## Environment Variables
+
+The CLI uses these environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ENVWARE_API_URL` | API endpoint | https://api.envware.dev |
+| `ENVWARE_SSH_KEY` | Path to SSH private key | ~/.ssh/id_rsa |
+
+---
+
+## Troubleshooting
+
+### "Access denied" on pull
+- Check you have access: `envw status <team> <project>`
+- Request access if needed: `envw request <team> <project> DEV`
+
+### "Project not found"
+- Verify team/project names: `envw projects <team>`
+- Create project: `envw request <team> <project> OWNER`
+
+### SSH key issues
+- Ensure you have SSH keys: `ls ~/.ssh/id_rsa*`
+- Generate if needed: `ssh-keygen -t rsa -b 4096`
+
+---
+
+## Links
+
+- **Website:** https://www.envware.dev
+- **Documentation:** https://www.envware.dev/docs
+- **GitHub:** https://github.com/envware/envware-go
+- **Support:** support@envware.dev

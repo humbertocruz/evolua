@@ -1,0 +1,58 @@
+# Envware
+
+> Secure environment variable manager with end-to-end encryption (E2EE) using SSH keys.
+
+Envware encrypts secrets locally before syncing. The server never sees plaintext data.
+
+## Quick Start
+
+```bash
+# Install
+curl -sSL https://www.envware.dev/install.sh | bash
+
+# Request access (or create project as OWNER)
+envw request <team> <project> <ROLE>
+
+# Push secrets (encrypts .env locally, uploads ciphertext)
+envw push <team> <project> [env-file]
+
+# Pull secrets (downloads and decrypts)
+envw pull <team> <project> [env-file]
+```
+
+## Core Commands
+
+| Command | Description |
+|---------|-------------|
+| `envw request <team> <project> <ROLE>` | Request access or create project |
+| `envw push <team> <project> [.env]` | Encrypt and upload secrets |
+| `envw pull <team> <project> [.env]` | Download and decrypt secrets |
+| `envw status <team> [project]` | Show team/project info |
+| `envw projects <team>` | List projects in a team |
+| `envw envs <team> <project>` | List environments |
+| `envw secrets <team> <project> [env]` | List secret keys (names only) |
+| `envw accept` | List pending access requests |
+| `envw accept <id>` | Approve access request |
+| `envw purchase teams` | Buy extra team slot |
+| `envw purchase projects <team>` | Buy +5 project slots |
+| `envw purchase users <team> <project>` | Buy +10 user slots |
+
+## Roles
+
+- **OWNER**: Full control, billing, can approve requests
+- **ADMIN**: Push, pull, approve access
+- **DEV**: Pull only
+- **CI**: Show individual secrets (for pipelines)
+
+## Security Model
+
+- Secrets encrypted with AES-256-GCM using a Project Key
+- Project Key is RSA-encrypted for each user's SSH public key
+- Server only stores encrypted envelopes, never plaintext
+- Access approval re-encrypts Project Key for new member's public key
+
+## Links
+
+- Website: https://www.envware.dev
+- Docs: https://www.envware.dev/docs
+- Install: `curl -sSL https://www.envware.dev/install.sh | bash`

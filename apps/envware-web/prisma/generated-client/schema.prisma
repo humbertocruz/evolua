@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String           @id @default(cuid())
+  email              String           @unique
+  password           String?
+  name               String? // Nome Humano 🌸
+  asaasCustomerId    String?
+  subscriptionStatus String           @default("FREE")
+  ownedTeams         Team[]           @relation("TeamOwner")
+  memberships        TeamMember[]
+  sshKeys            SshKey[]
+  projectKeys        ProjectKey[]
+  projectRequests    ProjectRequest[]
+  transactions       Transaction[]
+  isAdmin            Boolean          @default(false)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model Team {
+  id       String       @id @default(cuid())
+  name     String
+  slug     String       @unique
+  ownerId  String
+  owner    User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members  TeamMember[]
+  projects Project[]
+
+  // Limites e Customização 2.0 🌸
+  maxProjects        Int @default(3)
+  maxUsersPerProject Int @default(5)
+
+  // Stripe Billing 💸
+  stripeSubscriptionId String? @unique
+  stripeCustomerId     String?
+
+  isPremium        Boolean       @default(false)
+  isVerified       Boolean       @default(false)
+  verificationNote String?
+  transactions     Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String    @id @default(cuid())
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String    @default("MEMBER") // OWNER, ADMIN, MEMBER
+  // Granular access control
+  projects  Project[] @relation("ProjectAccess")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([teamId, userId])
+}
+
+model SshKey {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id])
+  publicKey        String       @unique
+  name             String? // Nome da máquina/alias (ex: Beto@MacBook) 💻
+  isVerified       Boolean      @default(false)
+  verificationCode String?
+  lastUsedAt       DateTime?
+  projectKeys      ProjectKey[]
+  createdAt        DateTime     @default(now())
+
+  @@unique([userId, publicKey])
+}
+
+model Project {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String
+  gitUrl      String? // URL do repositório Git vinculado 🌸
+  teamId      String
+  team        Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  projectKeys ProjectKey[]
+  // Explicit members for granular access
+  members     TeamMember[] @relation("ProjectAccess")
+
+  // Custom limits for individual project upgrades 🌸
+  maxUsers Int? // If null, use team.maxUsersPerProject
+
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  requests  ProjectRequest[]
+
+  @@unique([teamId, name])
+  @@unique([teamId, slug])
+}
+
+model ProjectKey {
+  id                  String   @id @default(cuid())
+  projectId           String
+  userId              String
+  sshKeyId            String?
+  encryptedProjectKey String
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user                User     @relation(fields: [userId], references: [id])
+  sshKey              SshKey?  @relation(fields: [sshKeyId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([projectId, userId, sshKeyId])
+}
+
+model ProjectRequest {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  publicKey String
+  role      String   @default("DEVELOPER")
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, userId, publicKey])
+}
+
+model SupportMessage {
+  id        String   @id @default(cuid())
+  email     String
+  message   String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  type       String // "TEAM_EXTRA", "USER_PACK"
+  status     String // "PENDING", "CONFIRMED", "FAILED"
+  amount     Float
+  provider   String  @default("ASAAS") // "ASAAS", "STRIPE"
+  externalId String? @unique // ID do link ou transação no Asaas/Stripe
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Analytic {
+  id        String   @id @default(cuid())
+  event     String   @unique // "landing_view", "docs_view", "install_script"
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
