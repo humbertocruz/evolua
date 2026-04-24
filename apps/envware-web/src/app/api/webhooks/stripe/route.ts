@@ -3,8 +3,11 @@ import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-01-27.acacia' as any,
+  });
+}
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -21,7 +24,7 @@ export async function POST(req: Request) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
@@ -43,9 +46,9 @@ export async function POST(req: Request) {
         } else if (teamId) {
             // New "Pack" sub for a team
             if (projectSlug && stripeSubscriptionId) {
-                const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+                const sub = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
                 const firstItem = sub.items.data[0];
-                if (firstItem) await stripe.subscriptionItems.update(firstItem.id, { metadata: { projectSlug } });
+                if (firstItem) await getStripe().subscriptionItems.update(firstItem.id, { metadata: { projectSlug } });
             }
             await prisma.team.update({
                 where: { id: teamId },
@@ -88,7 +91,7 @@ export async function POST(req: Request) {
 }
 
 async function syncTeamLimits(subscriptionId: string, teamId: string) {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
     let totalProjectSlots = 0;
     const projectUserOverrides: Record<string, number> = {};
     let defaultUserPacks = 0;

@@ -4,9 +4,11 @@ import { redis } from '@/lib/redis';
 import * as crypto from 'crypto';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-01-27.acacia' as any,
+  });
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +61,7 @@ export async function POST(request: Request) {
     // 4. Cancelar Assinaturas do Stripe se existirem
     if (team.stripeSubscriptionId) {
       try {
-        await stripe.subscriptions.cancel(team.stripeSubscriptionId);
+        await getStripe().subscriptions.cancel(team.stripeSubscriptionId);
       } catch (e) { console.error('Stripe cancel error:', e); }
     }
 

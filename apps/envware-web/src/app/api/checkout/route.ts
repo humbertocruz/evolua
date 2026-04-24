@@ -3,9 +3,11 @@ import { getAuthorizedUser } from '@/lib/auth/get-user';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-01-27.acacia' as any,
+  });
+}
 
 export async function POST(request: Request) {
   const user: any = await getAuthorizedUser();
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
       params.customer_email = user.email;
     }
 
-    const session = await stripe.checkout.sessions.create(params);
+    const session = await getStripe().checkout.sessions.create(params);
 
     return NextResponse.json({
       checkoutUrl: session.url,
@@ -94,7 +96,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'No active team subscription found to cancel.' }, { status: 404 });
     }
 
-    await stripe.subscriptions.cancel(activeTeamWithSub.stripeSubscriptionId);
+    await getStripe().subscriptions.cancel(activeTeamWithSub.stripeSubscriptionId);
 
     await prisma.team.update({
         where: { id: activeTeamWithSub.id },

@@ -5,9 +5,11 @@ import * as crypto from 'crypto';
 import { getAuthorizedUser } from '@/lib/auth/get-user';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-01-27.acacia' as any,
+  });
+}
 
 export const dynamic = 'force-dynamic';
 

@@ -3,9 +3,11 @@ import { prisma } from '@/lib/prisma';
 import { getVerifiedUser } from '@/lib/auth/get-verified-user';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-01-27.acacia' as any,
+  });
+}
 
 const PRICE_PROJECT_PACK = process.env.STRIPE_PRICE_PROJECT_PACK || 'price_dummy_projects';
 const PRICE_USER_PACK = process.env.STRIPE_PRICE_USER_PACK || 'price_dummy_users';
@@ -59,7 +61,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: 'To reduce team slots, please manage your subscription via the Stripe Customer Portal.' }, { status: 400 });
         }
 
-        const session = await stripe.checkout.sessions.create({
+        const session = await getStripe().checkout.sessions.create({
             mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [{ price: priceId, quantity: qty }],
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
 
     if (action === 'sub') {
       if (!team.stripeSubscriptionId) return NextResponse.json({ success: false, error: 'No active subscription' }, { status: 400 });
-      const subscription = await stripe.subscriptions.retrieve(team.stripeSubscriptionId);
+      const subscription = await getStripe().subscriptions.retrieve(team.stripeSubscriptionId);
       const item = subscription.items.data.find(i => i.price.id === priceId && (category !== 'users' || i.metadata.projectSlug === projectSlug));
       if (!item) return NextResponse.json({ success: false, error: 'No pack found' }, { status: 400 });
 
@@ -98,9 +100,9 @@ export async function POST(request: Request) {
           // For now let's allow removing it if desired
       }
 
-      if (item.quantity === 1 && subscription.items.data.length === 1) await stripe.subscriptions.cancel(team.stripeSubscriptionId);
-      else if (item.quantity === 1) await stripe.subscriptionItems.del(item.id);
-      else await stripe.subscriptionItems.update(item.id, { quantity: item.quantity! - 1, proration_behavior: 'always_invoice' });
+      if (item.quantity === 1 && subscription.items.data.length === 1) await getStripe().subscriptions.cancel(team.stripeSubscriptionId);
+      else if (item.quantity === 1) await getStripe().subscriptionItems.del(item.id);
+      else await getStripe().subscriptionItems.update(item.id, { quantity: item.quantity! - 1, proration_behavior: 'always_invoice' });
 
       return NextResponse.json({ success: true, message: `Pack removed! 🌸` });
     }
@@ -108,14 +110,14 @@ export async function POST(request: Request) {
     // ADD PACK
     const baseUrl = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://www.envware.dev';
     if (team.stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(team.stripeSubscriptionId);
+        const subscription = await getStripe().subscriptions.retrieve(team.stripeSubscriptionId);
         const item = subscription.items.data.find(i => i.price.id === priceId && (category === 'projects' || category === 'pro' ? true : i.metadata.projectSlug === projectSlug));
-        if (item) await stripe.subscriptionItems.update(item.id, { quantity: (item.quantity || 0) + qty, proration_behavior: 'always_invoice' });
-        else await stripe.subscriptionItems.create({ subscription: team.stripeSubscriptionId, price: priceId, quantity: qty, metadata: { projectSlug: projectSlug || '' } });
+        if (item) await getStripe().subscriptionItems.update(item.id, { quantity: (item.quantity || 0) + qty, proration_behavior: 'always_invoice' });
+        else await getStripe().subscriptionItems.create({ subscription: team.stripeSubscriptionId, price: priceId, quantity: qty, metadata: { projectSlug: projectSlug || '' } });
         return NextResponse.json({ success: true, message: `${qty} Pack(s) added to team! 🌸🚀` });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: qty }],
