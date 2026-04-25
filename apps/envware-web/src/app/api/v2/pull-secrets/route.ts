@@ -78,9 +78,9 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    // Buscar a ProjectKey encriptada para este usuário específico
+    // Buscar a ProjectKey encriptada para este usuário específico e ambiente
     const projectKeyRecord = await prisma.projectKey.findFirst({
-      where: { projectId: project.id, userId: user.id }
+      where: { projectId: project.id, userId: user.id, environment }
     });
 
     return NextResponse.json({ 

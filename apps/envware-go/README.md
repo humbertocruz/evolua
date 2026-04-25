@@ -1,11 +1,11 @@
-# 🌸 envware-go
+# 🌸 Git Envware CLI
 
 [![License](https://img.shields.io/badge/License-BSL%201.1-orange.svg?style=flat-square)](LICENSE.md)
 [![Go Version](https://img.shields.io/badge/Go-1.21+-blue?style=flat-square&logo=go)](https://go.dev)
 
 **Securely sync encrypted secrets across your devices and team with zero-trust security.**
 
-`envware-go` is the high-performance, Go-powered engine for Envware. It focuses on absolute security, speed, and a simplified developer experience for managing environment variables.
+`Git Envware` is the high-performance, Go-powered CLI for Envware. It focuses on absolute security, speed, and a simplified developer experience for managing environment variables.
 
 ## Why Envware?
 
@@ -45,7 +45,7 @@ curl -sSL https://www.envware.dev/install.sh | bash
 
 #### Via Go
 ```bash
-go install github.com/envware/envware-go@latest
+go install github.com/envware/Git Envware@latest
 ```
 *Note: Make sure your `$GOPATH/bin` is in your PATH.*
 

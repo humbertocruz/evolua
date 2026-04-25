@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🌸 envware installer
+# 🌸 Git Envware installer
 # This script detects your OS/Arch, downloads the latest binary from GitHub,
 # and installs it to your local system.
 
@@ -20,7 +20,7 @@ case $ARCH in
 esac
 
 # 2. Buscar última versão via GitHub API
-echo "🔍 Checking for the latest version of envware-go..."
+echo "🔍 Checking for the latest version of Git Envware..."
 LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "$LATEST_TAG" ]; then
@@ -29,7 +29,7 @@ if [ -z "$LATEST_TAG" ]; then
     exit 1
 fi
 
-echo "🚀 Downloading envware $LATEST_TAG for $OS ($ARCH)..."
+echo "🚀 Downloading Git Envware $LATEST_TAG for $OS ($ARCH)..."
 
 # 3. Nome do arquivo (Seguindo o padrão do build-all.sh)
 FILENAME="envware-$OS-$ARCH"
@@ -56,7 +56,7 @@ else
 fi
 
 echo ""
-echo "🌸 envware 2.1.5 (Go Engine) installed successfully!"
+echo "🌸 Git Envware 2.3.0 (Go Engine) installed successfully!"
 echo "✨ Run 'envw status <team>' to get started."
-echo "🚀 Git Integration: You can now use 'git envware pull' and 'git envware push'!"
+echo "🚀 Git Integration: You can now use 'git Git Envware pull' and 'git Git Envware push'!"
 echo "💎 Welcome to the Zero-Trust future."

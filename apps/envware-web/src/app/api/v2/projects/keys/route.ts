@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { publicKey, signature, projectSlug, teamSlug } = data;
+    const { publicKey, signature, projectSlug, teamSlug, environment = '.env' } = data;
 
     if (!publicKey || !signature || !projectSlug || !teamSlug) {
       return NextResponse.json({ success: false, error: 'Missing fields' }, { status: 400 });
@@ -43,15 +43,17 @@ export async function POST(request: Request) {
 
     if (!project) return NextResponse.json({ success: false, error: 'Project not found or Permission denied' }, { status: 403 });
 
+
+    // Check if key exists for this environment
     const existingKey = await prisma.projectKey.findFirst({
-        where: { projectId: project.id, userId: user.id }
+        where: { projectId: project.id, userId: user.id, environment }
     });
 
     if (existingKey) {
         return NextResponse.json({ success: true, encryptedProjectKey: existingKey.encryptedProjectKey });
     }
 
-    // 1. Gerar nova chave de projeto (E2EE) 🌸
+    // 1. Gerar nova chave de projeto para este ambiente específico (E2EE) 🌸
     const newProjectKey = crypto.randomBytes(32).toString('hex');
     
     // 2. Criptografar usando a ponte Go (necessário para SSH keys puras no Vercel/Node)
@@ -72,9 +74,11 @@ export async function POST(request: Request) {
       data: {
         projectId: project.id,
         userId: user.id,
+        environment,
         encryptedProjectKey
       }
     });
+
 
     return NextResponse.json({ 
       success: true, 

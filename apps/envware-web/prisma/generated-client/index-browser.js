@@ -184,6 +184,7 @@ exports.Prisma.ProjectKeyScalarFieldEnum = {
   projectId: 'projectId',
   userId: 'userId',
   sshKeyId: 'sshKeyId',
+  environment: 'environment',
   encryptedProjectKey: 'encryptedProjectKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

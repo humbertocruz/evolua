@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { publicKey, signature, requestId, encryptedProjectKey } = data;
+    const { publicKey, signature, requestId } = data;
 
-    if (!publicKey || !signature || !requestId || !encryptedProjectKey) {
+    if (!publicKey || !signature || !requestId) {
       return NextResponse.json({ success: false, error: 'Missing fields' }, { status: 400 });
     }
 
@@ -50,14 +50,40 @@ export async function POST(request: Request) {
 
     if (!isAuthorized) return NextResponse.json({ success: false, error: 'Permission denied' }, { status: 403 });
 
-    // 1. Criar a ProjectKey para o solicitante
-    await prisma.projectKey.create({
-        data: {
-            projectId: projectRequest.projectId,
-            userId: projectRequest.userId,
-            encryptedProjectKey
-        }
-    });
+    // 1. Criar as ProjectKeys baseadas na role do solicitante
+    const requestedRole = projectRequest.role;
+    
+    let environments = [];
+    if (requestedRole === 'OWNER' || requestedRole === 'ADMIN') {
+        environments = ['.env', '.env.development', '.env.preview'];
+    } else if (requestedRole === 'PREVIEW') {
+        environments = ['.env.development', '.env.preview'];
+    } else { // DEVELOPER / MEMBER
+        environments = ['.env.development'];
+    }
+    
+    for (const env of environments) {
+        // Gerar chave específica por ambiente
+        const projectKey = crypto.randomBytes(32).toString('hex');
+        
+        // Criptografar com a chave pública do solicitante
+        const encryptResp = await fetch(`${protocol}://${host}/api/v2/auth/verify-go`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ publicKey, plainText: projectKey })
+        });
+        const encryptData = await encryptResp.json();
+        if (!encryptData.success) continue;
+        
+        await prisma.projectKey.create({
+            data: {
+                projectId: projectRequest.projectId,
+                userId: projectRequest.userId,
+                environment: env,
+                encryptedProjectKey: encryptData.encryptedData
+            }
+        });
+    }
 
     // 2. Garantir que o usuário seja membro do time com a role correta
     await prisma.teamMember.upsert({

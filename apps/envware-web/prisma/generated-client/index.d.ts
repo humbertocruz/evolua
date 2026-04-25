@@ -7932,6 +7932,7 @@ export namespace Prisma {
     projectId: string | null
     userId: string | null
     sshKeyId: string | null
+    environment: string | null
     encryptedProjectKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7942,6 +7943,7 @@ export namespace Prisma {
     projectId: string | null
     userId: string | null
     sshKeyId: string | null
+    environment: string | null
     encryptedProjectKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7952,6 +7954,7 @@ export namespace Prisma {
     projectId: number
     userId: number
     sshKeyId: number
+    environment: number
     encryptedProjectKey: number
     createdAt: number
     updatedAt: number
@@ -7964,6 +7967,7 @@ export namespace Prisma {
     projectId?: true
     userId?: true
     sshKeyId?: true
+    environment?: true
     encryptedProjectKey?: true
     createdAt?: true
     updatedAt?: true
@@ -7974,6 +7978,7 @@ export namespace Prisma {
     projectId?: true
     userId?: true
     sshKeyId?: true
+    environment?: true
     encryptedProjectKey?: true
     createdAt?: true
     updatedAt?: true
@@ -7984,6 +7989,7 @@ export namespace Prisma {
     projectId?: true
     userId?: true
     sshKeyId?: true
+    environment?: true
     encryptedProjectKey?: true
     createdAt?: true
     updatedAt?: true
@@ -8067,6 +8073,7 @@ export namespace Prisma {
     projectId: string
     userId: string
     sshKeyId: string | null
+    environment: string
     encryptedProjectKey: string
     createdAt: Date
     updatedAt: Date
@@ -8094,6 +8101,7 @@ export namespace Prisma {
     projectId?: boolean
     userId?: boolean
     sshKeyId?: boolean
+    environment?: boolean
     encryptedProjectKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8107,6 +8115,7 @@ export namespace Prisma {
     projectId?: boolean
     userId?: boolean
     sshKeyId?: boolean
+    environment?: boolean
     encryptedProjectKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8120,6 +8129,7 @@ export namespace Prisma {
     projectId?: boolean
     userId?: boolean
     sshKeyId?: boolean
+    environment?: boolean
     encryptedProjectKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8133,12 +8143,13 @@ export namespace Prisma {
     projectId?: boolean
     userId?: boolean
     sshKeyId?: boolean
+    environment?: boolean
     encryptedProjectKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProjectKeyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "userId" | "sshKeyId" | "encryptedProjectKey" | "createdAt" | "updatedAt", ExtArgs["result"]["projectKey"]>
+  export type ProjectKeyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "userId" | "sshKeyId" | "environment" | "encryptedProjectKey" | "createdAt" | "updatedAt", ExtArgs["result"]["projectKey"]>
   export type ProjectKeyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8167,6 +8178,7 @@ export namespace Prisma {
       projectId: string
       userId: string
       sshKeyId: string | null
+      environment: string
       encryptedProjectKey: string
       createdAt: Date
       updatedAt: Date
@@ -8600,6 +8612,7 @@ export namespace Prisma {
     readonly projectId: FieldRef<"ProjectKey", 'String'>
     readonly userId: FieldRef<"ProjectKey", 'String'>
     readonly sshKeyId: FieldRef<"ProjectKey", 'String'>
+    readonly environment: FieldRef<"ProjectKey", 'String'>
     readonly encryptedProjectKey: FieldRef<"ProjectKey", 'String'>
     readonly createdAt: FieldRef<"ProjectKey", 'DateTime'>
     readonly updatedAt: FieldRef<"ProjectKey", 'DateTime'>
@@ -13442,6 +13455,7 @@ export namespace Prisma {
     projectId: 'projectId',
     userId: 'userId',
     sshKeyId: 'sshKeyId',
+    environment: 'environment',
     encryptedProjectKey: 'encryptedProjectKey',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -14025,6 +14039,7 @@ export namespace Prisma {
     projectId?: StringFilter<"ProjectKey"> | string
     userId?: StringFilter<"ProjectKey"> | string
     sshKeyId?: StringNullableFilter<"ProjectKey"> | string | null
+    environment?: StringFilter<"ProjectKey"> | string
     encryptedProjectKey?: StringFilter<"ProjectKey"> | string
     createdAt?: DateTimeFilter<"ProjectKey"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectKey"> | Date | string
@@ -14038,6 +14053,7 @@ export namespace Prisma {
     projectId?: SortOrder
     userId?: SortOrder
     sshKeyId?: SortOrderInput | SortOrder
+    environment?: SortOrder
     encryptedProjectKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -14048,26 +14064,28 @@ export namespace Prisma {
 
   export type ProjectKeyWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    projectId_userId_sshKeyId?: ProjectKeyProjectIdUserIdSshKeyIdCompoundUniqueInput
+    projectId_userId_sshKeyId_environment?: ProjectKeyProjectIdUserIdSshKeyIdEnvironmentCompoundUniqueInput
     AND?: ProjectKeyWhereInput | ProjectKeyWhereInput[]
     OR?: ProjectKeyWhereInput[]
     NOT?: ProjectKeyWhereInput | ProjectKeyWhereInput[]
     projectId?: StringFilter<"ProjectKey"> | string
     userId?: StringFilter<"ProjectKey"> | string
     sshKeyId?: StringNullableFilter<"ProjectKey"> | string | null
+    environment?: StringFilter<"ProjectKey"> | string
     encryptedProjectKey?: StringFilter<"ProjectKey"> | string
     createdAt?: DateTimeFilter<"ProjectKey"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectKey"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     sshKey?: XOR<SshKeyNullableScalarRelationFilter, SshKeyWhereInput> | null
-  }, "id" | "projectId_userId_sshKeyId">
+  }, "id" | "projectId_userId_sshKeyId_environment">
 
   export type ProjectKeyOrderByWithAggregationInput = {
     id?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     sshKeyId?: SortOrderInput | SortOrder
+    environment?: SortOrder
     encryptedProjectKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -14084,6 +14102,7 @@ export namespace Prisma {
     projectId?: StringWithAggregatesFilter<"ProjectKey"> | string
     userId?: StringWithAggregatesFilter<"ProjectKey"> | string
     sshKeyId?: StringNullableWithAggregatesFilter<"ProjectKey"> | string | null
+    environment?: StringWithAggregatesFilter<"ProjectKey"> | string
     encryptedProjectKey?: StringWithAggregatesFilter<"ProjectKey"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ProjectKey"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ProjectKey"> | Date | string
@@ -14820,6 +14839,7 @@ export namespace Prisma {
 
   export type ProjectKeyCreateInput = {
     id?: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14833,6 +14853,7 @@ export namespace Prisma {
     projectId: string
     userId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14840,6 +14861,7 @@ export namespace Prisma {
 
   export type ProjectKeyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14853,6 +14875,7 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14863,6 +14886,7 @@ export namespace Prisma {
     projectId: string
     userId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14870,6 +14894,7 @@ export namespace Prisma {
 
   export type ProjectKeyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14880,6 +14905,7 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15654,10 +15680,11 @@ export namespace Prisma {
     isNot?: SshKeyWhereInput | null
   }
 
-  export type ProjectKeyProjectIdUserIdSshKeyIdCompoundUniqueInput = {
+  export type ProjectKeyProjectIdUserIdSshKeyIdEnvironmentCompoundUniqueInput = {
     projectId: string
     userId: string
     sshKeyId: string
+    environment: string
   }
 
   export type ProjectKeyCountOrderByAggregateInput = {
@@ -15665,6 +15692,7 @@ export namespace Prisma {
     projectId?: SortOrder
     userId?: SortOrder
     sshKeyId?: SortOrder
+    environment?: SortOrder
     encryptedProjectKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15675,6 +15703,7 @@ export namespace Prisma {
     projectId?: SortOrder
     userId?: SortOrder
     sshKeyId?: SortOrder
+    environment?: SortOrder
     encryptedProjectKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -15685,6 +15714,7 @@ export namespace Prisma {
     projectId?: SortOrder
     userId?: SortOrder
     sshKeyId?: SortOrder
+    environment?: SortOrder
     encryptedProjectKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16985,6 +17015,7 @@ export namespace Prisma {
 
   export type ProjectKeyCreateWithoutUserInput = {
     id?: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16996,6 +17027,7 @@ export namespace Prisma {
     id?: string
     projectId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17192,6 +17224,7 @@ export namespace Prisma {
     projectId?: StringFilter<"ProjectKey"> | string
     userId?: StringFilter<"ProjectKey"> | string
     sshKeyId?: StringNullableFilter<"ProjectKey"> | string | null
+    environment?: StringFilter<"ProjectKey"> | string
     encryptedProjectKey?: StringFilter<"ProjectKey"> | string
     createdAt?: DateTimeFilter<"ProjectKey"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectKey"> | Date | string
@@ -17763,6 +17796,7 @@ export namespace Prisma {
 
   export type ProjectKeyCreateWithoutSshKeyInput = {
     id?: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17774,6 +17808,7 @@ export namespace Prisma {
     id?: string
     projectId: string
     userId: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17893,6 +17928,7 @@ export namespace Prisma {
 
   export type ProjectKeyCreateWithoutProjectInput = {
     id?: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17904,6 +17940,7 @@ export namespace Prisma {
     id?: string
     userId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18640,6 +18677,7 @@ export namespace Prisma {
     id?: string
     projectId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18778,6 +18816,7 @@ export namespace Prisma {
 
   export type ProjectKeyUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18789,6 +18828,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18798,6 +18838,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19038,6 +19079,7 @@ export namespace Prisma {
     id?: string
     projectId: string
     userId: string
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19045,6 +19087,7 @@ export namespace Prisma {
 
   export type ProjectKeyUpdateWithoutSshKeyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19056,6 +19099,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19065,6 +19109,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19074,6 +19119,7 @@ export namespace Prisma {
     id?: string
     userId: string
     sshKeyId?: string | null
+    environment?: string
     encryptedProjectKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19091,6 +19137,7 @@ export namespace Prisma {
 
   export type ProjectKeyUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19102,6 +19149,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19111,6 +19159,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     sshKeyId?: NullableStringFieldUpdateOperationsInput | string | null
+    environment?: StringFieldUpdateOperationsInput | string
     encryptedProjectKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

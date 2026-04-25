@@ -23,7 +23,7 @@ function SuccessContent() {
       </p>
 
       <div className="mockup-code bg-neutral text-neutral-content text-left mb-8 shadow-lg border border-white/5 scale-95">
-        <pre data-prefix="$"><code>envware status</code></pre>
+        <pre data-prefix="$"><code>git envware status</code></pre>
         <pre className="text-success"><code>Plan: ✨ PREMIUM</code></pre>
         <pre className="text-base-content/50"><code>Limits: 100 projects</code></pre>
       </div>
@@ -64,14 +64,14 @@ export default function SuccessPage() {
           <div className="relative w-24 h-24 overflow-hidden rounded-xl mb-4 opacity-50 mx-auto">
              <Image 
               src="/logo.png" 
-              alt="envware logo" 
+              alt="Git Envware logo" 
               fill 
               className="object-cover"
             />
           </div>
-          <p className="font-bold text-xl">envware</p> 
+          <p className="font-bold text-xl">Git Envware</p> 
           <p className="text-base-content/60">Built for developers, by developers.</p>
-          <p>© 2026 envware. All rights reserved.</p>
+          <p>© 2026 Git Envware. All rights reserved.</p>
         </aside>
       </footer>
     </div>

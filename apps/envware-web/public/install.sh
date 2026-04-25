@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# 🌸 envware installer
+# 🌸 Git Envware installer
 # This script detects your OS/Arch, downloads the latest binary from GitHub,
 # and installs it to your local system.
 
 set -e
 
-REPO="envware/envware-go" # Nome oficial do repositório
+REPO="Git Envware/Git Envware" # Nome oficial do repositório
 BINARY_NAME="envw"
 
 # 1. Detectar OS e Arquitetura
@@ -20,7 +20,7 @@ case $ARCH in
 esac
 
 # 2. Buscar última versão via GitHub API
-echo "🔍 Checking for the latest version of envware-go..."
+echo "🔍 Checking for the latest version of Git Envware..."
 LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "$LATEST_TAG" ]; then
@@ -29,10 +29,10 @@ if [ -z "$LATEST_TAG" ]; then
     exit 1
 fi
 
-echo "🚀 Downloading envware $LATEST_TAG for $OS ($ARCH)..."
+echo "🚀 Downloading Git Envware $LATEST_TAG for $OS ($ARCH)..."
 
 # 3. Nome do arquivo (Seguindo o padrão do build-all.sh)
-FILENAME="envware-$OS-$ARCH"
+FILENAME="Git Envware-$OS-$ARCH"
 if [ "$OS" = "windows" ]; then
     FILENAME="$FILENAME.exe"
 fi
@@ -47,16 +47,16 @@ chmod +x $BINARY_NAME
 echo "📦 Installing to /usr/local/bin (may require sudo)..."
 if [ -w "/usr/local/bin" ]; then
     mv $BINARY_NAME /usr/local/bin/
-    ln -sf /usr/local/bin/envw /usr/local/bin/git-envware
+    ln -sf /usr/local/bin/envw /usr/local/bin/git-Git Envware
     ln -sf /usr/local/bin/envw /usr/local/bin/git-envw
 else
     sudo mv $BINARY_NAME /usr/local/bin/
-    sudo ln -sf /usr/local/bin/envw /usr/local/bin/git-envware
+    sudo ln -sf /usr/local/bin/envw /usr/local/bin/git-Git Envware
     sudo ln -sf /usr/local/bin/envw /usr/local/bin/git-envw
 fi
 
 echo ""
-echo "🌸 envware 2.2.0 (Go Engine) installed successfully!"
+echo "🌸 Git Envware 2.2.0 (Go Engine) installed successfully!"
 echo "✨ Run 'envw status <team>' to get started."
-echo "🚀 Git Integration: You can now use 'git envware pull' and 'git envware push'!"
+echo "🚀 Git Integration: You can now use 'git Git Envware pull' and 'git Git Envware push'!"
 echo "💎 Welcome to the Zero-Trust future."
