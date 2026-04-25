@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { Github, LayoutDashboard, ShieldCheck, TerminalSquare } from 'lucide-react'
+import { Github, LayoutDashboard, TerminalSquare } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function Header() {
+  const t = useTranslations('Nav')
+
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-[#0a0c10]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-10">
@@ -18,8 +21,8 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-zinc-400 md:flex">
-          <Link href="/docs" className="transition hover:text-white">Docs</Link>
-          <Link href="/simulador" className="transition hover:text-white">Simulator</Link>
+          <Link href="/docs" className="transition hover:text-white">{t('docs')}</Link>
+          <Link href="/simulador" className="transition hover:text-white">{t('simulator')}</Link>
           <Link href="/dashboard" className="inline-flex items-center gap-1.5 transition hover:text-white">
             <LayoutDashboard size={14} />
             Dashboard

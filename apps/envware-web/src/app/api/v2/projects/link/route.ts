@@ -46,7 +46,8 @@ export async function POST(request: Request) {
 
     // Verificar se projeto já existe com essa URL
     const existingProject = await prisma.project.findFirst({
-      where: { gitUrl }
+      where: { gitUrl },
+      include: { team: true }
     });
 
     if (existingProject) {

@@ -10,9 +10,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { projectId, userId: targetUserId, encryptedProjectKey } = await request.json();
+    const { projectId, userId: targetUserId, encryptedProjectKey, environment = '.env' } = await request.json();
 
-    // Validar se o projeto existe
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: { team: true }
@@ -22,7 +21,6 @@ export async function POST(request: Request) {
 
     const currentUserId = user.id as string;
 
-    // Validar se o usuário atual é admin/owner do time do projeto
     const membership = await prisma.teamMember.findUnique({
       where: { teamId_userId: { teamId: project.teamId, userId: currentUserId } }
     });
@@ -31,24 +29,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
     }
 
-    // Criar ou atualizar a chave do projeto para o destinatário (targetUserId)
-    const projectKey = await prisma.projectKey.upsert({
-      where: { 
-        projectId_userId_sshKeyId: { 
-          projectId, 
-          userId: targetUserId, 
-          sshKeyId: null as any
-        } 
-      },
-      update: { encryptedProjectKey },
-      create: {
-        projectId,
-        userId: targetUserId,
-        encryptedProjectKey
-      }
+    // Upsert project key - find existing or create new
+    let projectKey;
+    const existing = await prisma.projectKey.findFirst({
+      where: { projectId, userId: targetUserId, environment }
     });
 
-    // Também garantir que ele seja membro do projeto (acesso granular)
+    if (existing) {
+      projectKey = await prisma.projectKey.update({
+        where: { id: existing.id },
+        data: { encryptedProjectKey }
+      });
+    } else {
+      projectKey = await prisma.projectKey.create({
+        data: {
+          projectId,
+          userId: targetUserId,
+          environment,
+          encryptedProjectKey
+        }
+      });
+    }
+
     await prisma.project.update({
       where: { id: projectId },
       data: {

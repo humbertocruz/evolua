@@ -9,7 +9,6 @@ function getStripe() {
   apiVersion: '2025-01-27.acacia' as any,
   });
 }
-});
 
 export async function POST(request: Request) {
   try {

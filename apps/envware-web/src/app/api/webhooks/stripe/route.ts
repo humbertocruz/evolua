@@ -5,10 +5,9 @@ import { headers } from 'next/headers';
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia' as any,
+    apiVersion: '2025-01-27.acacia' as any,
   });
 }
-});
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const PRICE_PROJECT_PACK = process.env.STRIPE_PRICE_PROJECT_PACK || 'price_dummy_projects';
@@ -41,45 +40,42 @@ export async function POST(req: Request) {
         const stripeCustomerId = session.customer as string;
 
         if (category === 'teams' && userId) {
-            // Updated user status (removed database-side subscription tracking) 🌸
-            await prisma.user.update({ where: { id: userId }, data: { asaasCustomerId: stripeCustomerId } });
+          await prisma.user.update({ where: { id: userId }, data: { asaasCustomerId: stripeCustomerId } });
         } else if (teamId) {
-            // New "Pack" sub for a team
-            if (projectSlug && stripeSubscriptionId) {
-                const sub = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
-                const firstItem = sub.items.data[0];
-                if (firstItem) await getStripe().subscriptionItems.update(firstItem.id, { metadata: { projectSlug } });
-            }
-            await prisma.team.update({
-                where: { id: teamId },
-                data: { stripeSubscriptionId, stripeCustomerId, isPremium: true },
-            });
-            await syncTeamLimits(stripeSubscriptionId, teamId);
+          if (projectSlug && stripeSubscriptionId) {
+            const sub = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
+            const firstItem = sub.items.data[0];
+            if (firstItem) await getStripe().subscriptionItems.update(firstItem.id, { metadata: { projectSlug } });
+          }
+          await prisma.team.update({
+            where: { id: teamId },
+            data: { stripeSubscriptionId, stripeCustomerId, isPremium: true },
+          });
+          await syncTeamLimits(stripeSubscriptionId, teamId);
         }
         break;
       }
 
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
-        // 1. Check if it's a team sub
         const team = await prisma.team.findUnique({ where: { stripeSubscriptionId: subscription.id } });
         if (team) {
-            await syncTeamLimits(subscription.id, team.id);
+          await syncTeamLimits(subscription.id, team.id);
         }
         break;
       }
-      
+
       case 'customer.subscription.deleted': {
-          const subscription = event.data.object as Stripe.Subscription;
-          const team = await prisma.team.findUnique({ where: { stripeSubscriptionId: subscription.id } });
-          if (team) {
-              await prisma.team.update({
-                  where: { id: team.id },
-                  data: { stripeSubscriptionId: null, maxProjects: 3, maxUsersPerProject: 5, isPremium: false }
-              });
-              await prisma.project.updateMany({ where: { teamId: team.id }, data: { maxUsers: null } });
-          }
-          break;
+        const subscription = event.data.object as Stripe.Subscription;
+        const team = await prisma.team.findUnique({ where: { stripeSubscriptionId: subscription.id } });
+        if (team) {
+          await prisma.team.update({
+            where: { id: team.id },
+            data: { stripeSubscriptionId: null, maxProjects: 3, maxUsersPerProject: 5, isPremium: false },
+          });
+          await prisma.project.updateMany({ where: { teamId: team.id }, data: { maxUsers: null } });
+        }
+        break;
       }
     }
   } catch (error: any) {
@@ -91,31 +87,31 @@ export async function POST(req: Request) {
 }
 
 async function syncTeamLimits(subscriptionId: string, teamId: string) {
-    const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
-    let totalProjectSlots = 0;
-    const projectUserOverrides: Record<string, number> = {};
-    let defaultUserPacks = 0;
+  const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
+  let totalProjectSlots = 0;
+  const projectUserOverrides: Record<string, number> = {};
+  let defaultUserPacks = 0;
 
-    subscription.items.data.forEach(item => {
-        if (item.price.id === PRICE_PROJECT_PACK) totalProjectSlots += (item.quantity || 0) * 5;
-        else if (item.price.id === PRICE_USER_PACK) {
-            const slug = item.metadata.projectSlug;
-            if (slug) projectUserOverrides[slug] = (projectUserOverrides[slug] || 0) + (item.quantity || 0) * 10;
-            else defaultUserPacks += (item.quantity || 0) * 10;
-        }
-    });
+  subscription.items.data.forEach(item => {
+    if (item.price.id === PRICE_PROJECT_PACK) totalProjectSlots += (item.quantity || 0) * 5;
+    else if (item.price.id === PRICE_USER_PACK) {
+      const slug = item.metadata.projectSlug;
+      if (slug) projectUserOverrides[slug] = (projectUserOverrides[slug] || 0) + (item.quantity || 0) * 10;
+      else defaultUserPacks += (item.quantity || 0) * 10;
+    }
+  });
 
-    await prisma.$transaction(async (tx) => {
-        await tx.team.update({
-            where: { id: teamId },
-            data: { maxProjects: 3 + totalProjectSlots, maxUsersPerProject: 5 + defaultUserPacks, isPremium: true }
-        });
-        await tx.project.updateMany({ where: { teamId: teamId }, data: { maxUsers: null } });
-        for (const [slug, extraUsers] of Object.entries(projectUserOverrides)) {
-            await tx.project.update({
-                where: { teamId_slug: { teamId, slug } },
-                data: { maxUsers: 5 + defaultUserPacks + extraUsers }
-            });
-        }
+  await prisma.$transaction(async (tx) => {
+    await tx.team.update({
+      where: { id: teamId },
+      data: { maxProjects: 3 + totalProjectSlots, maxUsersPerProject: 5 + defaultUserPacks, isPremium: true },
     });
+    await tx.project.updateMany({ where: { teamId: teamId }, data: { maxUsers: null } });
+    for (const [slug, extraUsers] of Object.entries(projectUserOverrides)) {
+      await tx.project.update({
+        where: { teamId_slug: { teamId, slug } },
+        data: { maxUsers: 5 + defaultUserPacks + extraUsers },
+      });
+    }
+  });
 }
